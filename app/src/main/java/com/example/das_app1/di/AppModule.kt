@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.example.das_app1.model.AppDatabase
 import com.example.das_app1.model.dao.PlaylistDao
-import com.example.das_app1.model.dao.UserDao
 import com.example.das_app1.model.repositories.IIdentificationRepository
 import com.example.das_app1.model.repositories.IPlaylistRepository
 import com.example.das_app1.model.repositories.IdentificationRepository
@@ -12,6 +11,7 @@ import com.example.das_app1.model.repositories.PlaylistRepository
 import com.example.das_app1.preferences.ILastLoggedUser
 import com.example.das_app1.preferences.IPreferencesRepository
 import com.example.das_app1.preferences.PreferencesRepository
+import com.example.das_app1.utils.AuthenticationClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,15 +49,7 @@ object AppModule {
             .createFromAsset("database/database.db")
             .build()
 
-    /**
-     * Proporciona el DAO de identificación para la base de datos.
-     *
-     * @param db Instancia de la base de datos.
-     * @return DAO de autenticación.
-     */
-    @Singleton
-    @Provides
-    fun provideIdentificationDao(db: AppDatabase) = db.userDao()
+
 
     /**
      * Proporciona el DAO de listas para la base de datos.
@@ -78,7 +70,7 @@ object AppModule {
      */
     @Singleton
     @Provides
-    fun provideIdentificationRepository(userDao: UserDao, lastLoggedUser: ILastLoggedUser): IIdentificationRepository=IdentificationRepository(userDao,lastLoggedUser)
+    fun provideIdentificationRepository(lastLoggedUser: ILastLoggedUser, authenticationClient: AuthenticationClient): IIdentificationRepository=IdentificationRepository(lastLoggedUser,authenticationClient)
 
     /**
      * Proporciona el repositorio de listas.

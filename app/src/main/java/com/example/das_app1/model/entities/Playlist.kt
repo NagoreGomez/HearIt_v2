@@ -29,9 +29,6 @@ data class PlaylistId(val id: String)
  * @property songCount La cantidad de canciones que contiene la lista.
  */
 @Entity(
-    foreignKeys = [
-        ForeignKey(entity = User::class, parentColumns = ["username"], childColumns = ["ownerUsername"], onDelete = ForeignKey.CASCADE)
-    ],
     tableName = "Playlist")
 
 data class Playlist(

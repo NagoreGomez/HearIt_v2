@@ -103,7 +103,8 @@ fun IdentificationScreen(
         coroutineScope.launch(Dispatchers.IO) {
             val username = identificationViewModel.checkLogin()
             if (username != null) {
-                onCorrectLogin(username)
+                val user=username.username
+                onCorrectLogin(user)
             } else showLoginErrorDialog = !identificationViewModel.isLoginCorrect
         }
 

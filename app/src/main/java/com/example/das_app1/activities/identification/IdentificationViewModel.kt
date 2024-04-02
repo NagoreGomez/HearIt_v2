@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.das_app1.model.entities.User
+import com.example.das_app1.model.entities.AuthUser
 import com.example.das_app1.model.repositories.IIdentificationRepository
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -66,15 +66,25 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
         isLogin = !isLogin
     }
 
+    // Property that defines if a background task that must block the UI is on course
+    var backgroundBlockingTaskOnCourse: Boolean by mutableStateOf(false)
+    // TODO
+    suspend fun checkUserLogin(authUser: AuthUser): Boolean {
+        backgroundBlockingTaskOnCourse = true
+        return identificationRepository.authenticateUser(authUser)
+
+    }
+
     /**
      * Comprueba si el usuario y contrsaeña son correctos.
      *
      * @return nombre de usuario si el inicio de sesión es correcto, sino null.
      */
-    fun checkLogin(): String? {
-        val username = loginUsername
-        isLoginCorrect = loginPassword.hash()==identificationRepository.getUserPassword(username)
-        return if (isLoginCorrect) username else null
+    @Throws(Exception::class)
+    suspend fun checkLogin(): AuthUser? {
+        val user= AuthUser(loginUsername,loginPassword)
+        isLoginCorrect = checkUserLogin(user)
+        return if (isLoginCorrect) user else null
     }
 
 
@@ -104,7 +114,7 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
      * @return nombre de usuario si el registro es correcto, sino null.
      */
     suspend fun checkSignIn(): String? {
-        val newUser = User(signInUsername, signInPassword.hash())
+        val newUser = AuthUser(signInUsername, signInPassword)
         val signInCorrect = identificationRepository.createUser(newUser)
         signInUserExists = !signInCorrect
         return if (signInCorrect) newUser.username else null

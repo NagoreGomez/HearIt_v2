@@ -1,9 +1,10 @@
 package com.example.das_app1.model.repositories
 
-import android.database.sqlite.SQLiteConstraintException
-import com.example.das_app1.model.dao.UserDao
-import com.example.das_app1.model.entities.User
+import com.example.das_app1.model.entities.AuthUser
 import com.example.das_app1.preferences.ILastLoggedUser
+import com.example.das_app1.utils.AuthenticationClient
+import com.example.das_app1.utils.AuthenticationException
+import com.example.das_app1.utils.UserExistsException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,8 +18,8 @@ import javax.inject.Singleton
  */
 
 interface IIdentificationRepository: ILastLoggedUser{
-    fun getUserPassword(username: String): String?
-    suspend fun createUser(user: User): Boolean
+    suspend fun authenticateUser(authUser: AuthUser): Boolean
+    suspend fun createUser(authUser: AuthUser): Boolean
 }
 
 /*************************************************************************
@@ -36,8 +37,8 @@ interface IIdentificationRepository: ILastLoggedUser{
 
 @Singleton
 class IdentificationRepository @Inject constructor(
-    private val userDao: UserDao,
-    private val lastLoggedUser: ILastLoggedUser
+    private val lastLoggedUser: ILastLoggedUser,
+    private val authenticationClient: AuthenticationClient,
 ) :IIdentificationRepository {
 
     /**
@@ -54,31 +55,23 @@ class IdentificationRepository @Inject constructor(
      */
     override suspend fun setLastLoggedUser(username: String) = lastLoggedUser.setLastLoggedUser(username)
 
-    /**
-     * Obtiene la contraseña de un usuario.
-     *
-     * @param username El nombre de usuario del que se quiere obtener la contraseña.
-     * @return La contraseña del usuario, o null si no se encuentra en la base de datos.
-     */
-    override fun getUserPassword(username: String): String? {
+
+    @Throws(Exception::class)
+    override suspend fun authenticateUser(authUser: AuthUser): Boolean {
         return try {
-            userDao.getUserPassword(username)
-        } catch (e: SQLiteConstraintException) {
-            null
+            authenticationClient.authenticate(authUser)
+            true
+        } catch (e: AuthenticationException) {
+            false
         }
     }
 
-    /**
-     * Crea un nuevo usuario en la base de datos.
-     *
-     * @param user El objeto [User] que representa al nuevo usuario.
-     * @return true si el usuario se creó exitosamente, false si no se pudo crear.
-     */
-    override suspend fun createUser(user: User): Boolean {
+
+    override suspend fun createUser(authUser: AuthUser): Boolean {
         return try {
-            userDao.createUser(user)
+            authenticationClient.createUser(authUser)
             true
-        } catch (e: SQLiteConstraintException) {
+        } catch (e: UserExistsException) {
             false
         }
     }

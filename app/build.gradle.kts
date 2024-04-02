@@ -4,6 +4,8 @@ plugins {
 
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    kotlin("plugin.serialization")
+
 }
 
 android {
@@ -110,6 +112,18 @@ dependencies {
     implementation("com.google.accompanist:accompanist-navigation-animation:0.24.4-alpha")
 
     implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
+
+
+    // KTOR
+    val ktor_version="2.2.2"
+    implementation ("io.ktor:ktor-client-core:$ktor_version")
+    implementation ("io.ktor:ktor-client-cio:$ktor_version")
+    implementation ("io.ktor:ktor-client-auth:$ktor_version")
+    implementation ("io.ktor:ktor-client-content-negotiation:$ktor_version")
+
+    // Kotlin Serialization
+    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation ("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 }
 
 // Allow references to generated code
