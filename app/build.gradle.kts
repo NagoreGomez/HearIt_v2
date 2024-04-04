@@ -6,6 +6,8 @@ plugins {
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization")
 
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -124,7 +126,14 @@ dependencies {
     // Kotlin Serialization
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation ("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation ("com.google.firebase:firebase-messaging-ktx:23.2.1")
 }
+
 
 // Allow references to generated code
 kapt {

@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.FragmentActivity
+import com.example.das_app1.MyNotificationChannels
 import com.example.das_app1.activities.main.MainActivity
 import com.example.das_app1.ui.theme.DAS_LANATheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +27,14 @@ import com.example.das_app1.NotificationID
 import com.example.das_app1.activities.main.PreferencesViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import com.google.android.gms.tasks.OnCompleteListener
+import javax.inject.Inject
+import com.example.das_app1.utils.APIClient
 
 /*************************************************************************
  ****                      IdentificationActivity                     ****
@@ -40,6 +50,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 @AndroidEntryPoint
 class IdentificationActivity : FragmentActivity() {
 
+    @Inject
+    lateinit var httpClient: APIClient
     // Definir los ViewModels necesarios
     private val identificationViewModel: IdentificationViewModel by viewModels()
     private val preferencesViewModel: PreferencesViewModel by viewModels()
@@ -104,7 +116,7 @@ class IdentificationActivity : FragmentActivity() {
      * @param username nombre de usuario del usuario registrado.
      */
     private fun onCorrectSignIn(username: String) {
-        val builder = NotificationCompat.Builder(this, "AUTH_CHANNEL")
+        val builder = NotificationCompat.Builder(this, MyNotificationChannels.AUTH_CHANNEL.name)
             .setSmallIcon(R.drawable.noti)
             .setContentTitle(getString(R.string.enhorabuena, username))
             .setContentText(getString(R.string.te_has_registrado_correctamente_en_HearIt))
@@ -118,7 +130,7 @@ class IdentificationActivity : FragmentActivity() {
             e.printStackTrace()
         }
         // Iniciar sesión
-        onCorrectLogin(username)
+        //onCorrectLogin(username)
     }
 
     /**
@@ -130,11 +142,39 @@ class IdentificationActivity : FragmentActivity() {
         // Establecer el username como último usuario que ha iniciado sesión
         identificationViewModel.updateLastLoggedUsername(username)
 
+        // Subscribe user
+        subscribeUser()
+
         // Llamar a la actividad principal
         val intent = Intent(this, MainActivity::class.java).apply {
             putExtra("LOGGED_USERNAME", username)
         }
         startActivity(intent)
         finish()
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun subscribeUser() {
+        // Get FCM
+        val fcm = FirebaseMessaging.getInstance()
+        Log.d("FCM", "DCM obtained")
+
+        // Delete previous token
+        fcm.deleteToken().addOnSuccessListener {
+            // Get a new token and subscribe the user
+            Log.d("FCM", "Token deleted")
+            fcm.token.addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.d("FCM", "Fetching FCM registration token failed", task.exception)
+                    return@OnCompleteListener
+                }
+
+                GlobalScope.launch(Dispatchers.IO) {
+                    Log.d("FCM", "New Token ${task.result}")
+                    httpClient.subscribeUser(task.result)
+                    Log.d("FCM", "User subscribed")
+                }
+            })
+        }
     }
 }
