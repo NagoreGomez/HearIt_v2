@@ -49,6 +49,16 @@
             </intent-filter>
         </service>
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.das_app1.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/cache_file_paths" />
+        </provider>
+
     </application>
 
 </manifest>

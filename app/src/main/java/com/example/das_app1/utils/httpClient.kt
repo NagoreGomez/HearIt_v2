@@ -29,6 +29,9 @@ import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.forms.*
 import io.ktor.serialization.kotlinx.json.*
+import java.io.ByteArrayOutputStream
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 
 /*******************************************************************************
  ****                               Exceptions                              ****
@@ -171,12 +174,30 @@ class APIClient @Inject constructor() {
         }
     }
 
-    suspend fun notificator(title: String, body: String) {
-        httpClient.post("http://34.136.150.204:8000/notifications") {
-            contentType(ContentType.Application.Json)
-            setBody(mapOf("title" to title, "body" to body))
-        }
+    //----------   User's profile image   ----------//
+
+    suspend fun getUserProfile(): Bitmap {
+        val response = httpClient.get("http://34.136.150.204:8000/profile/image")
+        val image: ByteArray = response.body()
+        return BitmapFactory.decodeByteArray(image, 0, image.size)
     }
+
+    suspend fun uploadUserProfile(image: Bitmap) {
+        val stream = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val byteArray = stream.toByteArray()
+
+        httpClient.submitFormWithBinaryData(
+            url = "http://34.136.150.204:8000/profile/image",
+            formData = formData {
+                append("file", byteArray, Headers.build {
+                    append(HttpHeaders.ContentType, "image/png")
+                    append(HttpHeaders.ContentDisposition, "filename=profile_image.png")
+                })
+            }
+        ) { method = HttpMethod.Put }
+    }
+
 
 
 }

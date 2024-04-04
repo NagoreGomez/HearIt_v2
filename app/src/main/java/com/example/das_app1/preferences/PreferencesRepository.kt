@@ -1,6 +1,8 @@
 package com.example.das_app1.preferences
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -9,6 +11,8 @@ import kotlinx.coroutines.flow.Flow
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.example.das_app1.utils.APIClient
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.util.*
@@ -44,6 +48,9 @@ interface IPreferencesRepository {
 
     fun userTheme(user: String): Flow<Int>
     suspend fun setUserTheme(user: String, theme: Int)
+
+    suspend fun userProfileImage(): Bitmap
+    suspend fun setUserProfileImage(image: Bitmap): Bitmap
 }
 
 /**
@@ -83,7 +90,10 @@ private object PreferencesKeys {
  * @param context El contexto de la aplicación (inyectado por Hilt).
  */
 @Singleton
-class PreferencesRepository @Inject constructor(private val context: Context) : IPreferencesRepository, ILastLoggedUser {
+class PreferencesRepository @Inject constructor(
+    private val context: Context,
+    private val apiClient: APIClient
+) : IPreferencesRepository, ILastLoggedUser {
 
     /**
      * Obtiene el último usuario identificado.
@@ -166,6 +176,29 @@ class PreferencesRepository @Inject constructor(private val context: Context) : 
         }
     }
 
+    private lateinit var profileImage: Bitmap
+    override suspend fun userProfileImage(): Bitmap {
+        if (!this::profileImage.isInitialized) {
+            try {
+                profileImage = apiClient.getUserProfile()
+            } catch (e: ResponseException) {
+                Log.e("HTTP", "Couldn't get profile image.")
+                e.printStackTrace()
+            }
+        }
+        return profileImage
+    }
+
+    override suspend fun setUserProfileImage(image: Bitmap): Bitmap {
+        try {
+            apiClient.uploadUserProfile(image)
+            profileImage = image
+        } catch (e: ResponseException) {
+            Log.e("HTTP", "Couldn't upload profile image.")
+            e.printStackTrace()
+        }
+        return profileImage
+    }
 
 
 }

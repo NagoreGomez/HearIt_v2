@@ -11,6 +11,7 @@ import com.example.das_app1.model.repositories.PlaylistRepository
 import com.example.das_app1.preferences.ILastLoggedUser
 import com.example.das_app1.preferences.IPreferencesRepository
 import com.example.das_app1.preferences.PreferencesRepository
+import com.example.das_app1.utils.APIClient
 import com.example.das_app1.utils.AuthenticationClient
 import dagger.Module
 import dagger.Provides
@@ -90,7 +91,7 @@ object AppModule {
      */
     @Singleton
     @Provides
-    fun provideLastLoggedUser(@ApplicationContext app: Context): ILastLoggedUser = PreferencesRepository(app)
+    fun provideLastLoggedUser(@ApplicationContext app: Context, apiClient: APIClient): ILastLoggedUser = PreferencesRepository(app, apiClient)
 
     /**
      * Proporciona el repositorio de preferencias de la aplicación.
@@ -100,7 +101,7 @@ object AppModule {
      */
     @Singleton
     @Provides
-    fun providePreferencesRepository(@ApplicationContext app: Context): IPreferencesRepository = PreferencesRepository(app)
+    fun providePreferencesRepository(@ApplicationContext app: Context, apiClient: APIClient): IPreferencesRepository = PreferencesRepository(app, apiClient)
 
 
 }

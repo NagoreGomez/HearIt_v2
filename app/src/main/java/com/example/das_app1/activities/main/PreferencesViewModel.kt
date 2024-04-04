@@ -1,5 +1,10 @@
 package com.example.das_app1.activities.main
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +13,7 @@ import com.example.das_app1.utils.AppLanguage
 import com.example.das_app1.utils.LanguageManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,6 +39,7 @@ class PreferencesViewModel @Inject constructor(
 ): ViewModel() {
 
     val username = savedStateHandle.get("LOGGED_USERNAME") as? String ?: ""
+
 
     // Idioma de la aplicación (para el inicio)
     val currentSetLang by languageManager::currentLang
@@ -87,6 +94,32 @@ class PreferencesViewModel @Inject constructor(
         }
     }
 
+
+    var profilePicture: Bitmap? by mutableStateOf(null)
+    private set
+
+    var profilePicturePath: String? = null
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            delay(100)
+            profilePicture = preferencesRepository.userProfileImage()
+        }
+    }
+
+    private fun setProfileImage(image: Bitmap) {
+        viewModelScope.launch(Dispatchers.IO) {
+            profilePicture = null
+            profilePicture = preferencesRepository.setUserProfileImage(image)
+        }
+    }
+
+    fun setProfileImage() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val image = BitmapFactory.decodeFile(profilePicturePath!!)
+            setProfileImage(image)
+        }
+    }
 
 }
 

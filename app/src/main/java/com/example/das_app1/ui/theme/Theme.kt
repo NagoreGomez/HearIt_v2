@@ -99,31 +99,34 @@ fun DAS_LANATheme(
 ) {
 
     val tema by preferencesViewModel.theme.collectAsState(initial = 1)
+    if (preferencesViewModel.username != "") {
+        val colors = if (tema == 1) {
+            DarkColors
+        } else {
+            LightColors
+        }
+        MaterialTheme(
+            colorScheme = colors,
+            typography = typographyH1,
+            content = content
+        )
+    }
+}
 
-    // La identificación siempre sera en el modo del dispositivo
-    if (preferencesViewModel.username=="") {
-        val colors= if (isSystemInDarkTheme()) {
-            DarkColors
-        }else{
-            LightColors
-        }
-        MaterialTheme(
-            colorScheme = colors,
-            typography = typographyH1,
-            content = content
-        )
+
+@Composable
+fun DAS_LANA_IDENT_Theme(
+    content: @Composable () -> Unit
+) {
+
+    val colors= if (isSystemInDarkTheme()) {
+        DarkColors
+    }else{
+        LightColors
     }
-    // Se ha identificado
-    else {
-        val colors= if (tema==1) {
-            DarkColors
-        }else{
-            LightColors
-        }
-        MaterialTheme(
-            colorScheme = colors,
-            typography = typographyH1,
-            content = content
-        )
-    }
+    MaterialTheme(
+        colorScheme = colors,
+        typography = typographyH1,
+        content = content
+    )
 }

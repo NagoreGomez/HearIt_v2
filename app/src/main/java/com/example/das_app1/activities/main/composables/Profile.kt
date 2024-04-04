@@ -1,8 +1,15 @@
 package com.example.das_app1.activities.main.composables
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,11 +26,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.AlertDialog
@@ -41,11 +51,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -82,6 +98,10 @@ fun Profile (
     prefLanguage: AppLanguage,
     prefShowCount:Boolean,
     prefTheme:Int,
+    profilePicture: Bitmap?,
+    onEditImageRequest: () -> Unit = {}
+
+
 ){
     val language: AppLanguage = if (prefLanguage.code == "es") AppLanguage.ES else AppLanguage.EN
     val show= if (prefShowCount) stringResource(R.string.mostrar) else stringResource(R.string.no_mostrar)
@@ -185,11 +205,38 @@ fun Profile (
                 Divider(Modifier.padding(top = 30.dp, bottom = 10.dp), color = MaterialTheme.colorScheme.onBackground)
             }
         }
-        Icon(
-            imageVector = Icons.Default.AccountCircle ,
-            contentDescription = "profile ",
-            modifier = Modifier.size(if (isVertical) 80.dp else 60.dp)
-        )
+        Box(contentAlignment = Alignment.BottomEnd) {
+            Box(Modifier.padding(16.dp)) {
+                if (profilePicture == null) {
+                    LoadingImagePlaceholder(size = 120.dp)
+                } else {
+                    Image(
+                        bitmap = profilePicture.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape),
+                    )
+                }
+            }
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .padding(bottom = 16.dp, end = 8.dp)
+                    .clip(CircleShape)
+                    .clickable(onClick = onEditImageRequest)
+            ) {
+
+                Icon(Icons.Filled.Circle, contentDescription = null, Modifier.size(34.dp), tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.Filled.Edit, contentDescription = null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.surface)
+            }
+
+        }
+
+
+
         Text(text = mainViewModel.username)
         Divider(Modifier.padding(top = 20.dp, bottom = 5.dp), color = MaterialTheme.colorScheme.onBackground)
         Column(
@@ -245,6 +292,40 @@ fun Profile (
         context=context
     )
 
+}
+
+
+@Composable
+private fun LoadingImagePlaceholder(size: Dp = 140.dp) {
+    // Creates an `InfiniteTransition` that runs infinite child animation values.
+    val infiniteTransition = rememberInfiniteTransition()
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        // `infiniteRepeatable` repeats the specified duration-based `AnimationSpec` infinitely.
+        animationSpec = infiniteRepeatable(
+            // The `keyframes` animates the value by specifying multiple timestamps.
+            animation = keyframes {
+                // One iteration is 1000 milliseconds.
+                durationMillis = 1000
+                // 0.7f at the middle of an iteration.
+                0.7f at 500
+            },
+            // When the value finishes animating from 0f to 1f, it repeats by reversing the
+            // animation direction.
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Image(
+        modifier = Modifier
+            .size(size)
+            .clip(CircleShape)
+            .alpha(alpha),
+        painter = painterResource(id = R.mipmap.icono),
+        contentDescription = null,
+        contentScale = ContentScale.Crop
+    )
 }
 
 /**

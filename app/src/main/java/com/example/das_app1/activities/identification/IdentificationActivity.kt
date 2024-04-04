@@ -24,7 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import com.example.das_app1.R
 import com.example.das_app1.activities.identification.screens.IdentificationScreen
 import com.example.das_app1.NotificationID
-import com.example.das_app1.activities.main.PreferencesViewModel
+import com.example.das_app1.ui.theme.DAS_LANA_IDENT_Theme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.messaging.FirebaseMessaging
@@ -54,14 +54,13 @@ class IdentificationActivity : FragmentActivity() {
     lateinit var httpClient: APIClient
     // Definir los ViewModels necesarios
     private val identificationViewModel: IdentificationViewModel by viewModels()
-    private val preferencesViewModel: PreferencesViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            DAS_LANATheme(preferencesViewModel) {
+            DAS_LANA_IDENT_Theme() {
                 // Obtener el tamaño de la ventana
 
                 Surface(
