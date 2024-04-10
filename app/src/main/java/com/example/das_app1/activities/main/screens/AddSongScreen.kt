@@ -35,11 +35,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AddSongScreen (
-    goBack:() -> Unit = {},
     mainViewModel: MainViewModel
 ) {
-    // Maneja el botón de retroceso del dispositivo
-    BackHandler(onBack = goBack)
 
     // ***************** DIALOGOS *****************
     var showAddErrorDialog by rememberSaveable { mutableStateOf(false) }

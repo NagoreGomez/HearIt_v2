@@ -35,12 +35,9 @@ import java.nio.file.Files
 
 @Composable
 fun ProfileScreen(
-    goBack:() -> Unit = {},
     mainViewModel: MainViewModel= viewModel(),
     preferencesViewModel: PreferencesViewModel= viewModel(),
 ){
-    // Maneja el botón de retroceso del dispositivo
-    BackHandler(onBack = goBack)
 
     val context = LocalContext.current
 
@@ -50,7 +47,7 @@ fun ProfileScreen(
     val profilePicture: Bitmap? = preferencesViewModel.profilePicture
 
 
-    val toastMsg = "No picture taken"
+    val toastMsg = stringResource(R.string.no_photo_has_been_taken)
 
     val imagePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { pictureTaken ->
         if (pictureTaken) preferencesViewModel.setProfileImage()

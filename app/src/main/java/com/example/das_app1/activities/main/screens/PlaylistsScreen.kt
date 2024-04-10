@@ -1,10 +1,13 @@
 package com.example.das_app1.activities.main.screens
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,18 +30,18 @@ import com.example.das_app1.activities.main.composables.Playlists
  * @param onPlaylistEdit  devolución de llamada para editar una lista.
  */
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun PlaylistsScreen(
-    exit: () -> Unit = {},
     mainViewModel: MainViewModel = viewModel(),
     preferencesViewModel: PreferencesViewModel = viewModel(),
     onPlaylistOpen: () -> Unit = {},
     onPlaylistEdit: () -> Unit = {}
 ){
-    // Maneja el botón de retroceso del dispositivo
-    BackHandler(onBack = exit)
 
     val usersPlaylists = mainViewModel.getUserPlaylists().collectAsState(initial = emptyList())
+
+
     val showSongCount by preferencesViewModel.showSongCount.collectAsState(initial = true)
 
     // Actualizar título
@@ -55,8 +58,4 @@ fun PlaylistsScreen(
         onPlaylistOpen=onPlaylistOpen,
         onPlaylistEdit=onPlaylistEdit
     )
-
-
 }
-
-

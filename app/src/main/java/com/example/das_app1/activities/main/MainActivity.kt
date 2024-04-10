@@ -56,10 +56,12 @@ import com.example.das_app1.activities.main.screens.Screens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.rounded.LibraryMusic
+import androidx.compose.material3.Button
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import kotlin.system.exitProcess
@@ -84,16 +86,32 @@ class MainActivity : AppCompatActivity() {
         setContent {
             // Recargar el idioma
             preferencesViewModel.reloadLang(preferencesViewModel.prefLang.collectAsState(initial = preferencesViewModel.currentSetLang).value)
+            mainViewModel.downloadData()
 
             DAS_LANATheme(preferencesViewModel)  {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
-                    MainActivityScreen(mainViewModel=mainViewModel, preferencesViewModel = preferencesViewModel)
+                    val downloadFinish=mainViewModel.downloadFinish
+                    if (downloadFinish){
+                        MainActivityScreen(mainViewModel=mainViewModel, preferencesViewModel = preferencesViewModel)
+                    }
+                    else{
+                        AlertDialog(
+                            onDismissRequest = { /* No hacer nada al intentar cerrar */ },
+                            title = { Text(text = "Cargando datos...") },
+                            text = { Text(text = "Espere por favor.") },
+                            confirmButton = { }
+                        )
+                    }
                 }
             }
+
+
+
+
+
         }
 
     }
@@ -151,7 +169,7 @@ private fun MainActivityScreen(
 
     // ***************** EVENTOS *****************
     val exit: () -> Unit = {exitAlert=true}
-    val onPlaylistOpen: () -> Unit = {navController.navigate(Screens.SongsScreen.route)}
+    val onPlaylistOpen: () -> Unit = { navController.navigate(Screens.SongsScreen.route)}
     val onPlaylistEdit: () -> Unit = {navController.navigate(Screens.EditPlaylistScreen.route)}
 
     val scope = rememberCoroutineScope()
@@ -163,7 +181,7 @@ private fun MainActivityScreen(
                 exitAlert=true
             } else {
                 if (!navController.popBackStack()) {
-                    navController.navigate(Screens.PlaylistScreen.route)
+                    navController.popBackStack()
                 }
             }
 
@@ -171,7 +189,9 @@ private fun MainActivityScreen(
         }
     }
 
+
     Scaffold(
+
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             // En orientación vertical, botón perfil y título como barra superior
@@ -206,7 +226,7 @@ private fun MainActivityScreen(
 
                     },
                     navigationIcon = {
-                        IconButton(onClick = { goBack() }) {
+                        IconButton(onClick = { navController.popBackStack() }) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "Atrás"
@@ -305,7 +325,7 @@ private fun MainActivityScreen(
                 playlistScreenFAB=true
                 showProfileFAB=true
                 mainViewModel.updateSongCount()
-                PlaylistsScreen(goBack,mainViewModel,preferencesViewModel,onPlaylistOpen,onPlaylistEdit)
+                PlaylistsScreen(mainViewModel,preferencesViewModel,onPlaylistOpen,onPlaylistEdit)
             }
             composable(route = Screens.CreatePlaylistScreen.route){
                 // Se mostrará unicamente el boton del perfil (en orientación horizontal)
@@ -313,18 +333,19 @@ private fun MainActivityScreen(
                 showProfileFAB=true
                 CreatePlaylistScreen(goBack,mainViewModel)
             }
+
             composable(route = Screens.SongsScreen.route){
                 // Se mostrarán los botones y el FAB add no está en PlaylistScreen
                 showAddFAB=true
                 playlistScreenFAB=false
                 showProfileFAB=true
-                SongsScreen(goBack,mainViewModel)
+                SongsScreen(mainViewModel)
             }
             composable(route = Screens.AddSongScreen.route){
                 // Se mostrará unicamente el boton del perfil (en orientación horizontal)
                 showAddFAB=false
                 showProfileFAB=true
-                AddSongScreen(goBack,mainViewModel)
+                AddSongScreen(mainViewModel)
             }
             composable(route = Screens.EditPlaylistScreen.route){
                 // Se mostrará unicamente el boton del perfil (en orientación horizontal)
@@ -336,8 +357,10 @@ private fun MainActivityScreen(
                 // Se mostrará unicamente el boton del perfil (en orientación horizontal)
                 showAddFAB=false
                 showProfileFAB=false
-                ProfileScreen(goBack,mainViewModel,preferencesViewModel)
+                ProfileScreen(mainViewModel,preferencesViewModel)
             }
+
+
         }
     }
 }

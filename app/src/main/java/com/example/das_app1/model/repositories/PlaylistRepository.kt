@@ -1,10 +1,15 @@
 package com.example.das_app1.model.repositories
 
 import android.database.sqlite.SQLiteConstraintException
+import android.util.Log
 import com.example.das_app1.model.dao.PlaylistDao
 import com.example.das_app1.model.entities.Playlist
 import com.example.das_app1.model.entities.PlaylistId
 import com.example.das_app1.model.entities.Song
+import com.example.das_app1.utils.APIClient
+import com.example.das_app1.utils.remotePlaylistSongToPlaylistSong
+import com.example.das_app1.utils.remotePlaylistToPlaylist
+import com.example.das_app1.utils.remoteSongToSong
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -27,6 +32,10 @@ interface IPlaylistRepository{
     fun updateSongCount():Int
     suspend fun addSongToPlaylist(songId: String, playlistId: String): Boolean
     suspend fun removeSongFromPlaylist(songId: String, playlistId: String): Boolean
+
+    suspend fun downloadPlaylistsFromRemote()
+    suspend fun downloadSongsFromRemote()
+    suspend fun downloadPlaylistsSongsFromRemote()
 }
 
 /*************************************************************************
@@ -44,7 +53,8 @@ interface IPlaylistRepository{
 
 @Singleton
 class PlaylistRepository @Inject constructor(
-    private val playlistDao: PlaylistDao
+    private val playlistDao: PlaylistDao,
+    private val apiClient: APIClient
 ): IPlaylistRepository {
 
     /**
@@ -82,6 +92,8 @@ class PlaylistRepository @Inject constructor(
     override fun getUserPlaylists(currentUser:String): Flow<List<Playlist>>{
         return playlistDao.getUserPlaylists(currentUser)
     }
+
+
 
     /**
      * Elimina una lista.
@@ -157,5 +169,25 @@ class PlaylistRepository @Inject constructor(
             false
         }
     }
+
+
+
+
+    override suspend fun downloadPlaylistsFromRemote(){
+        val playlistsList = apiClient.getAllPlaylists()
+        playlistsList.map {playlistDao.addPlaylist(remotePlaylistToPlaylist(it))}
+    }
+
+    override suspend fun downloadSongsFromRemote(){
+        val songsList = apiClient.getAllSongs()
+        songsList.map {playlistDao.addSong(remoteSongToSong(it))}
+    }
+
+    override suspend fun downloadPlaylistsSongsFromRemote(){
+        val playlistsSongsList = apiClient.getAllPlaylistSongs()
+        Log.d("playlisstt", playlistsSongsList.toString())
+        playlistsSongsList.map {playlistDao.addPlaylistSong(remotePlaylistSongToPlaylistSong(it))}
+    }
+
 }
 

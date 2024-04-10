@@ -22,11 +22,8 @@ import com.example.das_app1.activities.main.composables.Songs
 
 @Composable
 fun SongsScreen(
-    goBack:() -> Unit = {},
     mainViewModel: MainViewModel = viewModel(),
 ){
-    // Maneja el botón de retroceso del dispositivo
-    BackHandler(onBack = goBack)
 
     val playlistSongs=mainViewModel.getUserPlaylistSongs().collectAsState(initial = emptyList())
 

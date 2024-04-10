@@ -35,8 +35,6 @@ fun EditPlaylistScreen (
     goBack:() -> Unit = {},
     mainViewModel: MainViewModel
 ) {
-    // Maneja el botón de retroceso del dispositivo
-    BackHandler(onBack = goBack)
 
     // ***************** DIALOGOS *****************
     var showEditErrorDialog by rememberSaveable { mutableStateOf(false) }

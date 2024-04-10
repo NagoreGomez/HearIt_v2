@@ -3,10 +3,12 @@ package com.example.das_app1.model.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.example.das_app1.model.entities.Playlist
 import com.example.das_app1.model.entities.PlaylistId
+import com.example.das_app1.model.entities.PlaylistSongs
 import com.example.das_app1.model.entities.Song
 import kotlinx.coroutines.flow.Flow
 
@@ -23,6 +25,9 @@ interface PlaylistDao {
      */
     @Insert
     suspend fun createPlaylist(playlist: Playlist)
+
+
+
 
     /**
      * Edita el nombre de una lista.
@@ -102,4 +107,18 @@ interface PlaylistDao {
     @Query("DELETE FROM PlaylistSongs WHERE songId=:songId AND playlistId=:playlistId")
     suspend fun removeSongFromPlaylist(songId: String,playlistId: String)
 
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addPlaylist(playlist: Playlist)
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addSong(song: Song)
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addPlaylistSong(playlistSongs: PlaylistSongs)
 }

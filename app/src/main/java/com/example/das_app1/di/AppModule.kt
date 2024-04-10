@@ -81,7 +81,7 @@ object AppModule {
      */
     @Singleton
     @Provides
-    fun providePlaylistRepository(playlistDao: PlaylistDao): IPlaylistRepository=PlaylistRepository(playlistDao)
+    fun providePlaylistRepository(playlistDao: PlaylistDao, apiClient: APIClient): IPlaylistRepository=PlaylistRepository(playlistDao, apiClient)
 
     /**
      * Proporciona la implementación de `ILastLoggedUser`.

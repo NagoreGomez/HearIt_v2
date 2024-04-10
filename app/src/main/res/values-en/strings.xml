@@ -65,5 +65,7 @@
     <string name="buscar_canciones">Search songs</string>
     <string name="a_adir_canciones_a">Add songs to %1$s</string>
     <string name="no_se_encontraron_resultados">No results found for \"%1$s\"</string>
+    <string name="no_photo_has_been_taken">No photo has been taken</string>
+    <string name="widget_description">Widget para mostrar las playlists</string>
 
 </resources>

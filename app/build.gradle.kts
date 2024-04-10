@@ -132,6 +132,9 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-messaging-ktx:23.2.1")
+
+    // Glance for Widgets
+    implementation ("androidx.glance:glance-appwidget:1.0.0")
 }
 
 

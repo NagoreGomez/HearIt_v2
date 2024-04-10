@@ -1,6 +1,7 @@
 package com.example.das_app1.activities.main
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -14,6 +15,7 @@ import com.example.das_app1.model.entities.Song
 import com.example.das_app1.model.repositories.IPlaylistRepository
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -71,6 +73,33 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
     fun getUserPlaylists(): Flow<List<Playlist>>{
         return playlistRepository.getUserPlaylists(username)
     }
+
+    var downloadFinish by mutableStateOf(false)
+    fun downloadData() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try{
+                downloadPlaylistsFromRemote()
+                downloadSongsFromRemote()
+                downloadPlaylistsSongsFromRemote()
+                downloadFinish = true
+            }catch (e: Exception) {
+                Log.d("ERROR",e.toString())
+            }
+        }
+    }
+
+    suspend fun downloadPlaylistsFromRemote() {
+        playlistRepository.downloadPlaylistsFromRemote()
+    }
+
+    suspend fun downloadSongsFromRemote() {
+        playlistRepository.downloadSongsFromRemote()
+    }
+
+    suspend fun downloadPlaylistsSongsFromRemote() {
+        playlistRepository.downloadPlaylistsSongsFromRemote()
+    }
+
 
     // Elimina una lista
     fun removePlaylist(id: String){

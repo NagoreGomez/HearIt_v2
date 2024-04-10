@@ -1,7 +1,6 @@
 package com.example.das_app1.utils
 
 import android.util.Log
-import com.example.das_app1.model.entities.AuthUser
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -32,6 +31,11 @@ import io.ktor.serialization.kotlinx.json.*
 import java.io.ByteArrayOutputStream
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.example.das_app1.model.entities.remoteUser
+import com.example.das_app1.model.entities.remotePlaylist
+import com.example.das_app1.model.entities.remotePlaylistSongs
+import com.example.das_app1.model.entities.remoteSong
+import kotlinx.coroutines.runBlocking
 
 /*******************************************************************************
  ****                               Exceptions                              ****
@@ -50,7 +54,6 @@ data class TokenInfo(
 )
 
 private val bearerTokenStorage = mutableListOf<BearerTokens>()
-
 
 @Singleton
 class AuthenticationClient @Inject constructor() {
@@ -80,7 +83,7 @@ class AuthenticationClient @Inject constructor() {
     }
 
     @Throws(AuthenticationException::class, Exception::class)
-    suspend fun authenticate(user: AuthUser) {
+    suspend fun authenticate(user: remoteUser) {
         val tokenInfo: TokenInfo = httpClient.submitForm(
             url = "http://34.136.150.204:8000/identificate",
             formParameters = Parameters.build {
@@ -95,7 +98,7 @@ class AuthenticationClient @Inject constructor() {
     }
 
     @Throws(UserExistsException::class)
-    suspend fun createUser(user: AuthUser) {
+    suspend fun createUser(user: remoteUser) {
         Log.d(user.username,user.password)
         httpClient.post("http://34.136.150.204:8000/users") {
             contentType(ContentType.Application.Json)
@@ -140,6 +143,7 @@ class APIClient @Inject constructor() {
 
                 // Define token refreshing flow
                 refreshTokens {
+                    Log.d("aaaaa","refressh")
 
                     // Get the new token
                     val refreshTokenInfo: TokenInfo = client.submitForm(
@@ -163,6 +167,27 @@ class APIClient @Inject constructor() {
     /*************************************************
      **                   Methods                   **
      *************************************************/
+
+    suspend fun getAllPlaylists(): List<remotePlaylist> = runBlocking {
+        val response = httpClient.get("http://34.136.150.204:8000/playlists")
+        Log.d("playlist",response.body<String>().toString())
+        response.body()
+    }
+
+    suspend fun getAllSongs(): List<remoteSong> = runBlocking {
+        val response = httpClient.get("http://34.136.150.204:8000/songs")
+        Log.d("songs",response.body<String>().toString())
+        response.body()
+    }
+
+    suspend fun getAllPlaylistSongs(): List<remotePlaylistSongs> = runBlocking {
+        val response = httpClient.get("http://34.136.150.204:8000/allPlaylistSongs")
+        Log.d("playlistSongs",response.body<String>().toString())
+        response.body()
+    }
+
+
+
 
     //--------   User subscription to FCM   --------//
 

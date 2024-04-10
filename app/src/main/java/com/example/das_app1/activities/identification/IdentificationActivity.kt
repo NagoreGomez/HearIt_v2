@@ -35,6 +35,8 @@ import kotlinx.coroutines.launch
 import com.google.android.gms.tasks.OnCompleteListener
 import javax.inject.Inject
 import com.example.das_app1.utils.APIClient
+import com.example.das_app1.widgets.WidgetReceiver
+import com.example.das_app1.widgets.WidgetReceiver.Companion.UPDATE_ACTION
 
 /*************************************************************************
  ****                      IdentificationActivity                     ****
@@ -128,8 +130,9 @@ class IdentificationActivity : FragmentActivity() {
         } catch (e: SecurityException) {
             e.printStackTrace()
         }
-        // Iniciar sesión
-        //onCorrectLogin(username)
+        identificationViewModel.loginUsername=identificationViewModel.signInUsername
+        identificationViewModel.loginPassword=identificationViewModel.signInPassword
+        identificationViewModel.isLogin=true
     }
 
     /**
@@ -143,6 +146,10 @@ class IdentificationActivity : FragmentActivity() {
 
         // Subscribe user
         subscribeUser()
+
+        // Update Widgets
+        val updateIntent = Intent(this, WidgetReceiver::class.java).apply { action = UPDATE_ACTION }
+        this.sendBroadcast(updateIntent)
 
         // Llamar a la actividad principal
         val intent = Intent(this, MainActivity::class.java).apply {
@@ -169,9 +176,15 @@ class IdentificationActivity : FragmentActivity() {
                 }
 
                 GlobalScope.launch(Dispatchers.IO) {
-                    Log.d("FCM", "New Token ${task.result}")
-                    httpClient.subscribeUser(task.result)
-                    Log.d("FCM", "User subscribed")
+                    try{
+                        Log.d("FCM", "New Token ${task.result}")
+                        httpClient.subscribeUser(task.result)
+                        Log.d("FCM", "User subscribed")
+                    }
+                    catch (_:Exception){
+                        Log.d("a","http exception")
+                    }
+
                 }
             })
         }

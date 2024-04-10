@@ -1,6 +1,6 @@
 package com.example.das_app1.model.repositories
 
-import com.example.das_app1.model.entities.AuthUser
+import com.example.das_app1.model.entities.remoteUser
 import com.example.das_app1.preferences.ILastLoggedUser
 import com.example.das_app1.utils.AuthenticationClient
 import com.example.das_app1.utils.AuthenticationException
@@ -18,8 +18,8 @@ import javax.inject.Singleton
  */
 
 interface IIdentificationRepository: ILastLoggedUser{
-    suspend fun authenticateUser(authUser: AuthUser): Boolean
-    suspend fun createUser(authUser: AuthUser): Boolean
+    suspend fun authenticateUser(remoteUser: remoteUser): Boolean
+    suspend fun createUser(remoteUser: remoteUser): Boolean
 }
 
 /*************************************************************************
@@ -57,9 +57,9 @@ class IdentificationRepository @Inject constructor(
 
 
     @Throws(Exception::class)
-    override suspend fun authenticateUser(authUser: AuthUser): Boolean {
+    override suspend fun authenticateUser(remoteUser: remoteUser): Boolean {
         return try {
-            authenticationClient.authenticate(authUser)
+            authenticationClient.authenticate(remoteUser)
             true
         } catch (e: AuthenticationException) {
             false
@@ -67,9 +67,9 @@ class IdentificationRepository @Inject constructor(
     }
 
 
-    override suspend fun createUser(authUser: AuthUser): Boolean {
+    override suspend fun createUser(remoteUser: remoteUser): Boolean {
         return try {
-            authenticationClient.createUser(authUser)
+            authenticationClient.createUser(remoteUser)
             true
         } catch (e: UserExistsException) {
             false

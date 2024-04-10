@@ -229,7 +229,7 @@ fun Profile (
                     .clickable(onClick = onEditImageRequest)
             ) {
 
-                Icon(Icons.Filled.Circle, contentDescription = null, Modifier.size(34.dp), tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.Filled.Circle, contentDescription = null, Modifier.size(40.dp), tint = MaterialTheme.colorScheme.primary)
                 Icon(Icons.Filled.Edit, contentDescription = null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.surface)
             }
 
@@ -296,33 +296,26 @@ fun Profile (
 
 
 @Composable
-private fun LoadingImagePlaceholder(size: Dp = 140.dp) {
-    // Creates an `InfiniteTransition` that runs infinite child animation values.
-    val infiniteTransition = rememberInfiniteTransition()
+private fun LoadingImagePlaceholder(size: Dp = 100.dp) {
+    val infiniteTransition = rememberInfiniteTransition(label = "")
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
-        // `infiniteRepeatable` repeats the specified duration-based `AnimationSpec` infinitely.
         animationSpec = infiniteRepeatable(
-            // The `keyframes` animates the value by specifying multiple timestamps.
             animation = keyframes {
-                // One iteration is 1000 milliseconds.
                 durationMillis = 1000
-                // 0.7f at the middle of an iteration.
                 0.7f at 500
             },
-            // When the value finishes animating from 0f to 1f, it repeats by reversing the
-            // animation direction.
             repeatMode = RepeatMode.Reverse
-        )
+        ), label = ""
     )
 
     Image(
         modifier = Modifier
             .size(size)
             .clip(CircleShape)
-            .alpha(alpha),
-        painter = painterResource(id = R.mipmap.icono),
+            .alpha(alpha).padding(16.dp),
+        painter = painterResource(id = R.mipmap.loading),
         contentDescription = null,
         contentScale = ContentScale.Crop
     )

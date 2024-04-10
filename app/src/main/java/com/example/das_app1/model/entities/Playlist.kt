@@ -3,6 +3,8 @@ package com.example.das_app1.model.entities
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -39,5 +41,21 @@ data class Playlist(
     val songCount: Int
 )
 
+
+@Serializable
+data class CompactPlaylist(
+    val id: String,
+    val ownerUsername: String,
+    val name: String,
+    val songCount: Int
+) {
+    constructor(playlist: Playlist) : this(
+        id = playlist.id,
+        ownerUsername= playlist.ownerUsername,
+        name= playlist.name,
+        songCount=playlist.songCount
+    )
+
+}
 
 
