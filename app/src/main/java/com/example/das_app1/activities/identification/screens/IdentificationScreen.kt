@@ -1,6 +1,7 @@
 package com.example.das_app1.activities.identification.screens
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -34,7 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.das_app1.R
 import kotlinx.coroutines.Dispatchers
@@ -96,26 +99,62 @@ fun IdentificationScreen(
             }
         )
     }
+    var showServerErrorAlert by rememberSaveable { mutableStateOf(false) }
+    if (showServerErrorAlert) {
+        AlertDialog(
+            title = {
+                Text(
+                    stringResource(R.string.ha_ocurrido_alg_n_problema_con_el_servidor),
+                    style = TextStyle(fontSize = 18.sp)
+                )
+            },
+            text = {Text(text = stringResource(R.string.vuelva_a_intentarlo_por_favor)) },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showServerErrorAlert = false }) {
+                    Text(text = stringResource(R.string.cerrar))
+                }
+            },
+            onDismissRequest = { showServerErrorAlert = false }
+        )
+    }
 
 
     // ***************** EVENTOS *****************
     val onLogIn: () -> Unit = {
         coroutineScope.launch(Dispatchers.IO) {
-            val username = identificationViewModel.checkLogin()
-            if (username != null) {
-                val user=username.username
-                onCorrectLogin(user)
-            } else showLoginErrorDialog = !identificationViewModel.isLoginCorrect
+            try{
+                val username = identificationViewModel.checkLogin()
+                if (username != null) {
+                    val user=username.username
+                    onCorrectLogin(user)
+                } else showLoginErrorDialog = !identificationViewModel.isLoginCorrect
+            }
+            catch (e: Exception) {
+                Log.d("SERVER ERROR",e.toString())
+                showServerErrorAlert=true
+            }
+
         }
 
     }
 
-    val onSignIn: () -> Unit = {
+
+
+
+        val onSignIn: () -> Unit = {
         coroutineScope.launch(Dispatchers.IO) {
-            val username = identificationViewModel.checkSignIn()
-            if (username != null) {
-                onCorrectSignIn(username)
-            } else showSignInErrorDialog = identificationViewModel.signInUserExists
+            try{
+                val username = identificationViewModel.checkSignIn()
+                if (username != null) {
+                    onCorrectSignIn(username)
+                } else showSignInErrorDialog = identificationViewModel.signInUserExists
+            }
+            catch (e: Exception) {
+                Log.d("SERVER ERROR",e.toString())
+                showServerErrorAlert=true
+            }
+
         }
     }
 
@@ -125,16 +164,24 @@ fun IdentificationScreen(
     Scaffold { padding ->
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).horizontalScroll(rememberScrollState())
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .horizontalScroll(rememberScrollState())
         ) {
 
             // Si la orientación es horizontal, mostrar ambos formularios
             if (!isVertical) {
                 Box(
-                    modifier = Modifier.width(IntrinsicSize.Min).padding(8.dp),
+                    modifier = Modifier
+                        .width(IntrinsicSize.Min)
+                        .padding(8.dp),
                 ) {
                     Row(
-                        modifier=Modifier.height(IntrinsicSize.Min).padding(horizontal = 16.dp, vertical = 8.dp)
+                        modifier= Modifier
+                            .height(IntrinsicSize.Min)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         LogIn(
                             identificationViewModel=identificationViewModel,

@@ -68,4 +68,9 @@
     <string name="no_se_encontraron_resultados">No se encontraron resultados para \"%1$s\"</string>
     <string name="no_photo_has_been_taken">No se ha tomado ninguna foto</string>
     <string name="widget_description">Widget para mostrar las playlists</string>
+    <string name="subiendo_datos_y_cerrando_apliacaci_n">Subiendo datos y cerrando apliacación...</string>
+    <string name="espere_por_favor">Espere por favor.</string>
+    <string name="ha_ocurrido_alg_n_problema_con_el_servidor">Ha ocurrido algún problema con el servidor</string>
+    <string name="vuelva_a_intentarlo_por_favor">Vuelva a intentarlo por favor.</string>
+    <string name="cargando_datos">Cargando datos...</string>
 </resources>

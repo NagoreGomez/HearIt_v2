@@ -35,7 +35,7 @@ data class PlaylistId(val id: String)
 
 data class Playlist(
     @PrimaryKey
-    val id: String = UUID.randomUUID().toString(),
+    val id: String,
     val ownerUsername: String,
     val name: String,
     val songCount: Int

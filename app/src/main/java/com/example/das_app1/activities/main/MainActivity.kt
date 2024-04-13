@@ -100,8 +100,8 @@ class MainActivity : AppCompatActivity() {
                     else{
                         AlertDialog(
                             onDismissRequest = { /* No hacer nada al intentar cerrar */ },
-                            title = { Text(text = "Cargando datos...") },
-                            text = { Text(text = "Espere por favor.") },
+                            title = { Text(text = stringResource(R.string.cargando_datos), style = TextStyle(fontSize = 18.sp))},
+                            text = { Text(text = stringResource(R.string.espere_por_favor)) },
                             confirmButton = { }
                         )
                     }
@@ -150,11 +150,16 @@ private fun MainActivityScreen(
 
     // ***************** DIALOGOS *****************
     var exitAlert by rememberSaveable { mutableStateOf(false) }
+    var showUploadingAlert by rememberSaveable { mutableStateOf(false) }
+
     if (exitAlert){
+        val playlists=mainViewModel.getAllPlaylists().collectAsState(initial = emptyList()).value
+        val playlistsSongs=mainViewModel.getAllPlaylistsSongs().collectAsState(initial = emptyList()).value
+
         AlertDialog(
             title = { Text(stringResource(R.string.quiere_cerrar_la_aplicacion), style = TextStyle(fontSize = 17.sp)) },
             confirmButton = {
-                TextButton(onClick = {exitProcess(0) }) {
+                TextButton(onClick = {mainViewModel.uploadData(playlists,playlistsSongs); showUploadingAlert=true;  }) {
                     Text(text = stringResource(R.string.cerrar))
                 }
             },
@@ -167,6 +172,22 @@ private fun MainActivityScreen(
         )
     }
 
+    if (showUploadingAlert ){
+        if (!mainViewModel.uploadFinish){
+            AlertDialog(
+                onDismissRequest = { /* No hacer nada al intentar cerrar */ },
+                title = { Text(text = stringResource(R.string.subiendo_datos_y_cerrando_apliacaci_n), style = TextStyle(fontSize = 18.sp)) },
+                text = { Text(text = stringResource(R.string.espere_por_favor)) },
+                confirmButton = { }
+            )
+        }
+        else {
+            exitProcess(0)
+        }
+    }
+
+
+
     // ***************** EVENTOS *****************
     val exit: () -> Unit = {exitAlert=true}
     val onPlaylistOpen: () -> Unit = { navController.navigate(Screens.SongsScreen.route)}
@@ -178,7 +199,6 @@ private fun MainActivityScreen(
         scope.launch(Dispatchers.Main) {
             if (navController.currentDestination?.route == Screens.PlaylistScreen.route) {
                 exit() // Llama a la función exit si la pantalla actual es PlaylistScreen
-                exitAlert=true
             } else {
                 if (!navController.popBackStack()) {
                     navController.popBackStack()
@@ -226,7 +246,7 @@ private fun MainActivityScreen(
 
                     },
                     navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
+                        IconButton(onClick = { goBack() }) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "Atrás"
@@ -325,7 +345,7 @@ private fun MainActivityScreen(
                 playlistScreenFAB=true
                 showProfileFAB=true
                 mainViewModel.updateSongCount()
-                PlaylistsScreen(mainViewModel,preferencesViewModel,onPlaylistOpen,onPlaylistEdit)
+                PlaylistsScreen(goBack,mainViewModel,preferencesViewModel,onPlaylistOpen,onPlaylistEdit)
             }
             composable(route = Screens.CreatePlaylistScreen.route){
                 // Se mostrará unicamente el boton del perfil (en orientación horizontal)

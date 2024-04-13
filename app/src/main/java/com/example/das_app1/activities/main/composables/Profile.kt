@@ -2,6 +2,7 @@ package com.example.das_app1.activities.main.composables
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.RepeatMode
@@ -36,6 +37,8 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
@@ -73,6 +76,7 @@ import com.example.das_app1.utils.AppLanguage
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.system.exitProcess
 
 /*************************************************************************
  ****                              Profile                              ****
@@ -170,6 +174,9 @@ fun Profile (
             onDismissRequest = { showThemeAlert = false },
         )
     }
+
+
+
     // Descargar JSON
     var showDownloadAlert by rememberSaveable { mutableStateOf(false) }
 
@@ -465,6 +472,7 @@ fun Theme(onThemeChange: () -> Unit,theme: String){
         }
     }
 }
+
 
 
 @Composable

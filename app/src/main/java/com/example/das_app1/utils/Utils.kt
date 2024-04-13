@@ -32,3 +32,19 @@ fun remotePlaylistSongToPlaylistSong(remotePlaylistSongs: remotePlaylistSongs): 
     )
 
 }
+
+fun playlistToRemotePlaylist(playlist: Playlist): remotePlaylist {
+    return remotePlaylist(
+        playlist.id,
+        playlist.ownerUsername,
+        playlist.name,
+        playlist.songCount
+    )
+}
+
+fun playlistSongToRemotePlaylistSong(playlistSong: PlaylistSongs): remotePlaylistSongs {
+    return remotePlaylistSongs(
+        playlistSong.playlistId,
+        playlistSong.songId
+    )
+}

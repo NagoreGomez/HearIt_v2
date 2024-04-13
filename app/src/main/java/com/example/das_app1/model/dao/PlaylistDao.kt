@@ -121,4 +121,26 @@ interface PlaylistDao {
     @Transaction
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addPlaylistSong(playlistSongs: PlaylistSongs)
+
+
+    @Transaction
+    @Query("SELECT * FROM PlayList")
+    fun getAllPlaylists(): Flow<List<Playlist>>
+
+
+    @Transaction
+    @Query("SELECT * FROM PlaylistSongs")
+    fun getAllPlaylistsSongs(): Flow<List<PlaylistSongs>>
+
+    @Transaction
+    @Query("DELETE FROM Playlist ")
+    suspend fun deletePlaylists()
+
+
+    @Transaction
+    @Query("DELETE FROM PlaylistSongs")
+    suspend fun deletePlaylistsSongs()
+
+
+
 }

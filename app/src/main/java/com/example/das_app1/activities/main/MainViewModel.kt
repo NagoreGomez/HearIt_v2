@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.das_app1.R
 import com.example.das_app1.model.entities.Playlist
 import com.example.das_app1.model.entities.PlaylistId
+import com.example.das_app1.model.entities.PlaylistSongs
 import com.example.das_app1.model.entities.Song
 import com.example.das_app1.model.repositories.IPlaylistRepository
 import com.google.gson.GsonBuilder
@@ -59,7 +60,7 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
 
     // Crea una nueva lista
     suspend fun createPlaylist(): String?{
-        val newPlaylist= Playlist(UUID.randomUUID().toString(),username,playlistName,0)
+        val newPlaylist= Playlist(UUID.randomUUID().toString().take(20),username,playlistName,0)
         val addCorrect=playlistRepository.createPlaylist(newPlaylist)
         return if (addCorrect) playlistName else null
     }
@@ -74,31 +75,6 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
         return playlistRepository.getUserPlaylists(username)
     }
 
-    var downloadFinish by mutableStateOf(false)
-    fun downloadData() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try{
-                downloadPlaylistsFromRemote()
-                downloadSongsFromRemote()
-                downloadPlaylistsSongsFromRemote()
-                downloadFinish = true
-            }catch (e: Exception) {
-                Log.d("ERROR",e.toString())
-            }
-        }
-    }
-
-    suspend fun downloadPlaylistsFromRemote() {
-        playlistRepository.downloadPlaylistsFromRemote()
-    }
-
-    suspend fun downloadSongsFromRemote() {
-        playlistRepository.downloadSongsFromRemote()
-    }
-
-    suspend fun downloadPlaylistsSongsFromRemote() {
-        playlistRepository.downloadPlaylistsSongsFromRemote()
-    }
 
 
     // Elimina una lista
@@ -156,6 +132,66 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
                 }
             return@runBlocking gsonBuilder.toJson(playlistSongs)
         }
+    }
+
+
+
+    var downloadFinish by mutableStateOf(false)
+    fun downloadData() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try{
+                downloadPlaylistsFromRemote()
+                downloadSongsFromRemote()
+                downloadPlaylistsSongsFromRemote()
+                downloadFinish = true
+            }catch (e: Exception) {
+                Log.d("ERROR",e.toString())
+            }
+        }
+    }
+
+    suspend fun downloadPlaylistsFromRemote() {
+        playlistRepository.downloadPlaylistsFromRemote(username)
+    }
+
+    suspend fun downloadSongsFromRemote() {
+        playlistRepository.downloadSongsFromRemote()
+    }
+
+    suspend fun downloadPlaylistsSongsFromRemote() {
+        playlistRepository.downloadPlaylistsSongsFromRemote(username)
+    }
+
+
+    var uploadFinish by mutableStateOf(false)
+    fun uploadData(playlistList: List<Playlist>, playlistSongsList: List<PlaylistSongs>) {
+        Log.d("actual",playlistList.toString())
+        CoroutineScope(Dispatchers.IO).launch {
+            try{
+                uploadPlaylistsToRemote(playlistList)
+                uploadPlaylistsSongsToRemote(playlistSongsList)
+                uploadFinish = true
+
+            }catch (e: Exception) {
+                Log.d("ERROR",e.toString())
+            }
+        }
+    }
+
+    fun getAllPlaylists(): Flow<List<Playlist>>{
+        return playlistRepository.getAllPlaylists()
+    }
+
+    fun getAllPlaylistsSongs(): Flow<List<PlaylistSongs>>{
+        return playlistRepository.getAllPlaylistsSongs()
+    }
+
+    suspend fun uploadPlaylistsToRemote(playlistList: List<Playlist>){
+        playlistRepository.uploadPlaylistsToRemote(playlistList)
+    }
+
+    suspend fun uploadPlaylistsSongsToRemote(playlistSongsList: List<PlaylistSongs>){
+        playlistRepository.uploadPlaylistsSongsToRemote(playlistSongsList)
     }
 
 }

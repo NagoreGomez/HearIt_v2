@@ -66,6 +66,11 @@
     <string name="a_adir_canciones_a">Add songs to %1$s</string>
     <string name="no_se_encontraron_resultados">No results found for \"%1$s\"</string>
     <string name="no_photo_has_been_taken">No photo has been taken</string>
-    <string name="widget_description">Widget para mostrar las playlists</string>
+    <string name="widget_description">Widget to show playlist</string>
+    <string name="subiendo_datos_y_cerrando_apliacaci_n">Uploading data and closing application...</string>
+    <string name="espere_por_favor">Please wait.</string>
+    <string name="ha_ocurrido_alg_n_problema_con_el_servidor">A problem has occurred with the server</string>
+    <string name="vuelva_a_intentarlo_por_favor">Please try again.</string>
+    <string name="cargando_datos">Loading data...</string>
 
 </resources>

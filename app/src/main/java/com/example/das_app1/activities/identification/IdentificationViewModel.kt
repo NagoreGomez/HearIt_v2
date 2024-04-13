@@ -66,11 +66,8 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
         isLogin = !isLogin
     }
 
-    // Property that defines if a background task that must block the UI is on course
-    var backgroundBlockingTaskOnCourse: Boolean by mutableStateOf(false)
-    // TODO
+
     suspend fun checkUserLogin(remoteUser: remoteUser): Boolean {
-        backgroundBlockingTaskOnCourse = true
         return identificationRepository.authenticateUser(remoteUser)
 
     }

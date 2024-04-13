@@ -31,6 +31,7 @@ import io.ktor.serialization.kotlinx.json.*
 import java.io.ByteArrayOutputStream
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.example.das_app1.model.entities.Playlist
 import com.example.das_app1.model.entities.remoteUser
 import com.example.das_app1.model.entities.remotePlaylist
 import com.example.das_app1.model.entities.remotePlaylistSongs
@@ -163,30 +164,35 @@ class APIClient @Inject constructor() {
         }
     }
 
-
-    /*************************************************
-     **                   Methods                   **
-     *************************************************/
-
-    suspend fun getAllPlaylists(): List<remotePlaylist> = runBlocking {
+    suspend fun getPlaylists(): List<remotePlaylist> = runBlocking {
         val response = httpClient.get("http://34.136.150.204:8000/playlists")
-        Log.d("playlist",response.body<String>().toString())
         response.body()
     }
 
-    suspend fun getAllSongs(): List<remoteSong> = runBlocking {
+    suspend fun getSongs(): List<remoteSong> = runBlocking {
         val response = httpClient.get("http://34.136.150.204:8000/songs")
-        Log.d("songs",response.body<String>().toString())
         response.body()
     }
 
-    suspend fun getAllPlaylistSongs(): List<remotePlaylistSongs> = runBlocking {
+    suspend fun getPlaylistSongs(): List<remotePlaylistSongs> = runBlocking {
         val response = httpClient.get("http://34.136.150.204:8000/allPlaylistSongs")
-        Log.d("playlistSongs",response.body<String>().toString())
         response.body()
     }
 
 
+    suspend fun uploadPlaylists(playlistList: List<remotePlaylist>) = runBlocking{
+        httpClient.post("http://34.136.150.204:8000/uploadPlaylists"){
+            contentType(ContentType.Application.Json)
+            setBody(playlistList)
+        }
+    }
+
+    suspend fun uploadPlaylistsSongs(playlistSongsList: List<remotePlaylistSongs>) = runBlocking{
+        httpClient.post("http://34.136.150.204:8000/uploadPlaylistSongs"){
+            contentType(ContentType.Application.Json)
+            setBody(playlistSongsList)
+        }
+    }
 
 
     //--------   User subscription to FCM   --------//

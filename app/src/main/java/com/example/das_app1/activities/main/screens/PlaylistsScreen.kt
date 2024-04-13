@@ -33,11 +33,13 @@ import com.example.das_app1.activities.main.composables.Playlists
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun PlaylistsScreen(
+    goBack:() -> Unit = {},
     mainViewModel: MainViewModel = viewModel(),
     preferencesViewModel: PreferencesViewModel = viewModel(),
     onPlaylistOpen: () -> Unit = {},
     onPlaylistEdit: () -> Unit = {}
 ){
+    BackHandler { goBack() }
 
     val usersPlaylists = mainViewModel.getUserPlaylists().collectAsState(initial = emptyList())
 
