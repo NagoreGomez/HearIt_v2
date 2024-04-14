@@ -10,9 +10,6 @@ import com.example.das_app1.NotificationID
 import com.example.das_app1.R
 
 
-/**
- * Service for handling FCM messages when application is in foreground.
- */
 class FCMService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {}
 
