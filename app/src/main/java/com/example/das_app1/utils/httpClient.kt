@@ -144,7 +144,6 @@ class APIClient @Inject constructor() {
 
                 // Define token refreshing flow
                 refreshTokens {
-                    Log.d("aaaaa","refressh")
 
                     // Get the new token
                     val refreshTokenInfo: TokenInfo = client.submitForm(
@@ -164,8 +163,8 @@ class APIClient @Inject constructor() {
         }
     }
 
-    suspend fun getPlaylists(): List<remotePlaylist> = runBlocking {
-        val response = httpClient.get("http://34.136.150.204:8000/playlists")
+    suspend fun getUserPlaylists(): List<remotePlaylist> = runBlocking {
+        val response = httpClient.get("http://34.136.150.204:8000/userPlaylists")
         response.body()
     }
 
@@ -174,8 +173,8 @@ class APIClient @Inject constructor() {
         response.body()
     }
 
-    suspend fun getPlaylistSongs(): List<remotePlaylistSongs> = runBlocking {
-        val response = httpClient.get("http://34.136.150.204:8000/allPlaylistSongs")
+    suspend fun getUserPlaylistSongs(): List<remotePlaylistSongs> = runBlocking {
+        val response = httpClient.get("http://34.136.150.204:8000/playlistsSongs")
         response.body()
     }
 
@@ -193,6 +192,48 @@ class APIClient @Inject constructor() {
             setBody(playlistSongsList)
         }
     }
+
+
+
+
+    suspend fun createPlaylist(remotePlaylist: remotePlaylist) = runBlocking {
+        httpClient.post("http://34.136.150.204:8000/createPlaylist") {
+            contentType(ContentType.Application.Json)
+            setBody(remotePlaylist)
+        }
+    }
+
+    suspend fun editPlaylist(remotePlaylist_id: String, remotePlaylist_name: String) = runBlocking {
+        httpClient.post("http://34.136.150.204:8000/editPlaylist") {
+            contentType(ContentType.Application.Json)
+            parameter("playlist_id", remotePlaylist_id)
+            parameter("playlist_name", remotePlaylist_name)
+        }
+    }
+
+    suspend fun deletePlaylist(remotePlaylist_id: String) = runBlocking {
+        httpClient.post("http://34.136.150.204:8000/deletePlaylist") {
+            contentType(ContentType.Application.Json)
+            parameter("playlist_id", remotePlaylist_id)
+        }
+    }
+
+    suspend fun addPlaylistSong(remotePlaylist_id: String, remoteSong_id: String) = runBlocking {
+        httpClient.post("http://34.136.150.204:8000/addPlaylistSong") {
+            contentType(ContentType.Application.Json)
+            parameter("playlist_id", remotePlaylist_id)
+            parameter("song_id", remoteSong_id)
+        }
+    }
+
+    suspend fun deletePlaylistSong(remotePlaylist_id: String, remoteSong_id: String) = runBlocking {
+        httpClient.post("http://34.136.150.204:8000/deletePlaylistSong") {
+            contentType(ContentType.Application.Json)
+            parameter("playlist_id", remotePlaylist_id)
+            parameter("song_id", remoteSong_id)
+        }
+    }
+
 
 
     //--------   User subscription to FCM   --------//

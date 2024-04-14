@@ -1,13 +1,15 @@
 package com.example.das_app1.widgets
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.util.Log
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
+import androidx.glance.Button
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
@@ -18,14 +20,16 @@ import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
-import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
+import androidx.glance.appwidget.updateAll
 import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
+import androidx.glance.layout.Box
 import androidx.glance.layout.Column
+import androidx.glance.layout.ContentScale
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
@@ -34,8 +38,6 @@ import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
-import androidx.glance.state.GlanceStateDefinition
-import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
@@ -46,7 +48,11 @@ import com.example.das_app1.widgets.WidgetReceiver.Companion.todayVisitsDataKey
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import com.example.das_app1.R
+import com.example.das_app1.ui.theme.md_theme_dark_background
+import com.example.das_app1.ui.theme.md_theme_light_background
+import com.example.das_app1.ui.theme.md_theme_light_inversePrimary
 import com.example.das_app1.widgets.WidgetReceiver.Companion.UPDATE_ACTION
+
 
 
 class Widget : GlanceAppWidget() {
@@ -57,10 +63,12 @@ class Widget : GlanceAppWidget() {
         }
     }
 
+    @SuppressLint("StringFormatMatches")
     @Composable
     private fun Content() {
 
         val prefs = currentState<Preferences>()
+        val context = LocalContext.current
 
 
         val user = prefs[currentUserKey]
@@ -72,152 +80,99 @@ class Widget : GlanceAppWidget() {
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(color = Color.White)
+                .background(color = md_theme_light_background)
                 .padding(16.dp)
         ) {
 
-            /*------------------------------------------------
-            |                     Header                     |
-            ------------------------------------------------*/
-
             Text(
-                text = if (user != null) "Your playlist $user" else "All playlists",
+                text = if (user != null) context.getString(R.string.your_playlist, user) else " ",
                 modifier = GlanceModifier.fillMaxWidth().padding(bottom = 16.dp),
-                maxLines = 1
+                maxLines = 1,
+                style =TextStyle(fontWeight = FontWeight.Medium, fontSize = 17.sp, textAlign = TextAlign.Center),
             )
-
-
-            /*------------------------------------------------
-            |               Body (Visit List)                |
-            ------------------------------------------------*/
 
             when {
 
-                //-----------   No user logged in   ------------//
                 user == null -> {
                     Column(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = GlanceModifier.fillMaxSize().defaultWeight()
                     ) {
-                        Text(text = "Login please")
+                        Text(text = context.getString(R.string.login_please))
                     }
                 }
 
-                //------   User logged in but no visits   ------//
                 playlistList.isEmpty() -> {
                     Column(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = GlanceModifier.fillMaxSize().defaultWeight()
                     ) {
-                        Text(text = "No playlists")
+                        Text(text = context.getString(R.string.create_your_first_playlist))
                     }
                 }
 
-                //-------   User logged in with visits   -------//
                 else -> {
                     LazyColumn(modifier = GlanceModifier.fillMaxSize().defaultWeight()) {
                         items(playlistList, itemId = { it.hashCode().toLong() }) { item ->
-                            VisitItem(playlists = item)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = GlanceModifier.fillMaxWidth().padding(vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = item.name,
+                                    style = TextStyle(fontWeight = FontWeight.Medium, fontSize = 16.sp, textAlign = TextAlign.Left),
+                                    modifier = GlanceModifier.defaultWeight()
+                                )
+
+                                Spacer(modifier = GlanceModifier.width(16.dp))
+
+                                Text(
+                                    text = context.getString(R.string.songs, item.songCount),
+                                    style = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp, textAlign = TextAlign.Center),
+                                    modifier = GlanceModifier.defaultWeight()
+                                )
+                            }
                         }
                     }
                 }
             }
-
-
-            /*------------------------------------------------
-            |                 Refresh Button                 |
-            ------------------------------------------------*/
-
             Spacer(GlanceModifier.height(8.dp))
 
             Image(
-                provider = ImageProvider(R.drawable.playlist),
+                provider = ImageProvider(R.drawable.reload),
                 contentDescription = "Refresh",
-                modifier = GlanceModifier.size(24.dp).clickable{ actionRunCallback<RefreshAction>()}
+                modifier = GlanceModifier.size(25.dp).clickable{ actionRunCallback<RefreshAction>()}
             )
+
         }
     }
 
 
      class RefreshAction : ActionCallback {
-
         override suspend fun onAction(
             context: Context,
             glanceId: GlanceId,
             parameters: ActionParameters
         ) {
-            Widget().update(context, glanceId)
-
-            /*
-            val intent = Intent(context, WidgetReceiver::class.java).apply { action = UPDATE_ACTION }
-            context.sendBroadcast(intent)
-             */
-
+            Widget().updateAll(context)
         }
     }
 
-
-    /*************************************************
-     **            Widget Visit List Item           **
-     *************************************************/
-
-    @Composable
-    private fun VisitItem(playlists: CompactPlaylist) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-
-            /*------------------------------------------------
-            |                   Visit Data                   |
-            ------------------------------------------------*/
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = GlanceModifier.fillMaxWidth().defaultWeight()
-            ) {
-
-                //------------------   Hour   ------------------//
-
-                Column {
-                    Text(text = playlists.name)
-                }
-
-                Spacer(GlanceModifier.width(16.dp))
-
-
-                //----------   Client Data and Town   ----------//
-
-                Column {
-                    Text(text =playlists.songCount.toString() , modifier = GlanceModifier.defaultWeight())
-                }
-            }
-
-
-            /*------------------------------------------------
-            |                 Action Buttons                 |
-            ------------------------------------------------*/
-
-            Row(horizontalAlignment = Alignment.CenterHorizontally, modifier = GlanceModifier.padding(start = 16.dp)) {
-
-                //------------------   Call   ------------------//
-
-                Image(
-                    provider = ImageProvider(R.drawable.icono),
-                    contentDescription = null,
-                    modifier = GlanceModifier.size(18.dp).clickable(
-                        actionStartActivity(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", playlists.id, null)))
-                    )
-                )
-
-                Spacer(GlanceModifier.width(16.dp))
-
-
-            }
+    /*
+    val context = LocalContext.current
+    Widget().refresh(context)
+     */
+    fun refresh(context:Context){
+        actionRunCallback<RefreshAction>()
+        val intent = Intent(context, WidgetReceiver::class.java).apply {
+            action = UPDATE_ACTION
         }
+        context.sendBroadcast(intent)
     }
+
+
 
 
 

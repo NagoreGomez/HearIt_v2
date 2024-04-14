@@ -73,4 +73,9 @@
     <string name="ha_ocurrido_alg_n_problema_con_el_servidor">Ha ocurrido algún problema con el servidor</string>
     <string name="vuelva_a_intentarlo_por_favor">Vuelva a intentarlo por favor.</string>
     <string name="cargando_datos">Cargando datos...</string>
+    <string name="your_playlist">Tus listas %1$s</string>
+    <string name="login_please">Inicia sesión por favor</string>
+    <string name="create_your_first_playlist">Crea tu primera lista!</string>
+    <string name="songs">%1$s canciones</string>
+    <string name="siguiente_concierto_de">Siguiente concierto de %1$s</string>
 </resources>

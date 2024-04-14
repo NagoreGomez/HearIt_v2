@@ -47,6 +47,9 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
     var playlistId by mutableStateOf(  "")
 
     var songId by mutableStateOf(  "")
+    var songSinger by mutableStateOf(  "")
+    var singerConcertLocation by mutableStateOf(  "")
+
 
     // Variables para la barra de búsqueda de la pantalla AddSongScreen
     var addSongQuery by mutableStateOf(  "")
@@ -66,7 +69,7 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
     }
 
     // Edita una lista
-    fun editPlaylist(): Int{
+    suspend fun editPlaylist(): Int{
         return playlistRepository.editPlaylist(playlistId,playlistName)
     }
 
@@ -80,8 +83,7 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
     // Elimina una lista
     fun removePlaylist(id: String){
         viewModelScope.launch(Dispatchers.IO) {
-            val playlistId = PlaylistId(id)
-            playlistRepository.removePlaylist(playlistId)
+            playlistRepository.removePlaylist(id)
         }
     }
 
@@ -95,17 +97,10 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
         return playlistRepository.getUserPlaylistSongs(playlistId)
     }
 
-    // Actualiza el número de canciones de las listas
-    fun updateSongCount(){
-        viewModelScope.launch(Dispatchers.IO) {
-             playlistRepository.updateSongCount()
-        }
-    }
 
     // Añade una cancion a una lista
     suspend fun addSongToPlaylist(): String?{
         val addCorrect=playlistRepository.addSongToPlaylist(songId,playlistId)
-        updateSongCount()
         return if (addCorrect) songId else null
     }
 
@@ -113,7 +108,6 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
     fun removeSongFromPlaylist(songId: String){
         viewModelScope.launch(Dispatchers.IO) {
             playlistRepository.removeSongFromPlaylist(songId,playlistId)
-            updateSongCount()
         }
 
     }
@@ -193,5 +187,14 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
     suspend fun uploadPlaylistsSongsToRemote(playlistSongsList: List<PlaylistSongs>){
         playlistRepository.uploadPlaylistsSongsToRemote(playlistSongsList)
     }
+
+
+    fun getConcertLocation(): Pair<Double, Double> {
+        // Simulación de obtener la ubicación del concierto desde la base de datos
+        Log.d("aaaaaa",songId)
+        return Pair(40.7128, -74.0060)  // Latitud y longitud de ejemplo (Nueva York)
+    }
+
+
 
 }

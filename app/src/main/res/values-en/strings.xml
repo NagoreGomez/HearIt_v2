@@ -72,5 +72,10 @@
     <string name="ha_ocurrido_alg_n_problema_con_el_servidor">A problem has occurred with the server</string>
     <string name="vuelva_a_intentarlo_por_favor">Please try again.</string>
     <string name="cargando_datos">Loading data...</string>
+    <string name="your_playlist">Your playlist %1$s</string>
+    <string name="login_please">Login please</string>
+    <string name="create_your_first_playlist">Create your first playlist!</string>
+    <string name="songs">%1$s songs</string>
+    <string name="siguiente_concierto_de">%1$s\'s next concert</string>
 
 </resources>

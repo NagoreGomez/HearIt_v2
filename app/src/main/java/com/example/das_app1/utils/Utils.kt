@@ -1,5 +1,7 @@
 package com.example.das_app1.utils
 
+import android.content.Context
+import android.location.Geocoder
 import com.example.das_app1.model.entities.Playlist
 import com.example.das_app1.model.entities.PlaylistSongs
 import com.example.das_app1.model.entities.remotePlaylist
@@ -21,7 +23,8 @@ fun remoteSongToSong(remoteSong: remoteSong): Song {
         remoteSong.id,
         remoteSong.name,
         remoteSong.singer,
-        remoteSong.url
+        remoteSong.url,
+        remoteSong.concert_location
     )
 }
 
@@ -47,4 +50,19 @@ fun playlistSongToRemotePlaylistSong(playlistSong: PlaylistSongs): remotePlaylis
         playlistSong.playlistId,
         playlistSong.songId
     )
+}
+
+fun getLatLngFromAddress(context: Context, mAddress: String): Pair<Double, Double>? {
+    val coder = Geocoder(context)
+    try {
+        val addressList = coder.getFromLocationName(mAddress, 1)
+        if (addressList.isNullOrEmpty()) {
+            return null
+        }
+        val location = addressList[0]
+        return Pair(location.latitude, location.longitude)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return null
+    }
 }

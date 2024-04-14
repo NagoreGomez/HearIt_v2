@@ -29,5 +29,6 @@ data class remoteSong(
     val id: String,
     val name: String,
     val singer: String,
-    val url: String
+    val url: String,
+    val concert_location: String
 )

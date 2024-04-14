@@ -25,5 +25,6 @@ data class Song(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val name: String,
     val singer: String,
-    val url: String
+    val url: String,
+    val concertLocation: String
 )

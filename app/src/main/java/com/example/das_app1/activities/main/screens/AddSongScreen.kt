@@ -13,10 +13,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.das_app1.R
 import com.example.das_app1.activities.main.MainViewModel
 import com.example.das_app1.activities.main.composables.AddSong
+import com.example.das_app1.widgets.Widget
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -37,6 +39,7 @@ import kotlinx.coroutines.launch
 fun AddSongScreen (
     mainViewModel: MainViewModel
 ) {
+
 
     // ***************** DIALOGOS *****************
     var showAddErrorDialog by rememberSaveable { mutableStateOf(false) }

@@ -23,6 +23,7 @@ import com.example.das_app1.activities.main.composables.Songs
 @Composable
 fun SongsScreen(
     mainViewModel: MainViewModel = viewModel(),
+    onSongMapClick: () -> Unit = {}
 ){
 
     val playlistSongs=mainViewModel.getUserPlaylistSongs().collectAsState(initial = emptyList())
@@ -36,6 +37,7 @@ fun SongsScreen(
     Songs(
         mainViewModel = mainViewModel,
         playlistSongs = playlistSongs,
-        isVertical= isVertical
+        isVertical= isVertical,
+        onSongMapClick=onSongMapClick
     )
 }

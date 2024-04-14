@@ -9,12 +9,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.das_app1.activities.main.MainViewModel
 import com.example.das_app1.R
 import com.example.das_app1.activities.main.PreferencesViewModel
 import com.example.das_app1.activities.main.composables.Playlists
+import com.example.das_app1.widgets.Widget
 
 /*************************************************************************
  ****                       PlaylistsScreen                        ****
@@ -41,6 +43,7 @@ fun PlaylistsScreen(
 ){
     BackHandler { goBack() }
 
+
     val usersPlaylists = mainViewModel.getUserPlaylists().collectAsState(initial = emptyList())
 
 
@@ -48,6 +51,7 @@ fun PlaylistsScreen(
 
     // Actualizar título
     mainViewModel.title= stringResource(R.string.tus_playlists)
+    Log.d("HOLA", "HOLAA")
 
     val isVertical= LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 

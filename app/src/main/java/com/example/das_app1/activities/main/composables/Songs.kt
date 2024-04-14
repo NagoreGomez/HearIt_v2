@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -61,6 +62,7 @@ fun Songs(
     mainViewModel: MainViewModel,
     playlistSongs: State<List<Song>>,
     isVertical: Boolean,
+    onSongMapClick: () -> Unit = {}
 ){
     // Variables necesarias para intent implícito
     val context = LocalContext.current
@@ -215,6 +217,18 @@ fun Songs(
                                         Icon(
                                             imageVector = Icons.Default.Delete,
                                             contentDescription = "delete",
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(15.dp))
+
+                                    // Icono para eliminar canción
+                                    IconButton(
+                                        onClick = { mainViewModel.songSinger=row.singer;mainViewModel.songId=row.id; mainViewModel.singerConcertLocation=row.concertLocation; onSongMapClick()},
+                                        modifier = Modifier.size(24.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Map,
+                                            contentDescription = "map",
                                         )
                                     }
                                 }

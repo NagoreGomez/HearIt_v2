@@ -78,14 +78,7 @@ interface PlaylistDao {
             "AND PlaylistSongs.playlistId=:playListId ORDER BY Song.name ASC")
     fun getUserPlaylistSong(playListId: String): Flow<List<Song>>
 
-    /**
-     * Actualiza el recuento de canciones para todas las listas en la base de datos.
-     *
-     * @return El número de listas de reproducción actualizadas.
-     */
-    @Transaction
-    @Query("UPDATE playlist SET songCount = (SELECT COUNT(*) FROM PlaylistSongs WHERE playlistId = playlist.id) WHERE id IN (SELECT DISTINCT id FROM playlist)")
-    fun updateSongCount(): Int
+
 
     /**
      * Añade una canción a una lista.

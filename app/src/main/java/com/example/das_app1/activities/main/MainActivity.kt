@@ -64,6 +64,9 @@ import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material3.Button
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
+import com.example.das_app1.activities.main.screens.ConcertLocationScreen
+import com.example.das_app1.widgets.Widget
 import kotlin.system.exitProcess
 
 
@@ -86,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             // Recargar el idioma
             preferencesViewModel.reloadLang(preferencesViewModel.prefLang.collectAsState(initial = preferencesViewModel.currentSetLang).value)
-            mainViewModel.downloadData()
+            if (!mainViewModel.downloadFinish)mainViewModel.downloadData()
 
             DAS_LANATheme(preferencesViewModel)  {
                 Surface(
@@ -107,13 +110,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-
-
-
-
-
         }
-
     }
 
 }
@@ -139,6 +136,7 @@ private fun MainActivityScreen(
     val isVertical= LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
+
     // Indica si se muestra el FAB de add
     var showAddFAB by rememberSaveable { mutableStateOf(false) }
     // Indica si se muestra el FAB del perfil, cuando la horientacion es horizontal)
@@ -159,7 +157,7 @@ private fun MainActivityScreen(
         AlertDialog(
             title = { Text(stringResource(R.string.quiere_cerrar_la_aplicacion), style = TextStyle(fontSize = 17.sp)) },
             confirmButton = {
-                TextButton(onClick = {mainViewModel.uploadData(playlists,playlistsSongs); showUploadingAlert=true;  }) {
+                TextButton(onClick = { exitProcess(0)  }) {
                     Text(text = stringResource(R.string.cerrar))
                 }
             },
@@ -190,8 +188,9 @@ private fun MainActivityScreen(
 
     // ***************** EVENTOS *****************
     val exit: () -> Unit = {exitAlert=true}
-    val onPlaylistOpen: () -> Unit = { navController.navigate(Screens.SongsScreen.route)}
+    val onPlaylistOpen: () -> Unit = {  navController.navigate(Screens.SongsScreen.route)}
     val onPlaylistEdit: () -> Unit = {navController.navigate(Screens.EditPlaylistScreen.route)}
+    val onSongMapClick: () -> Unit = { navController.navigate(Screens.ConcertLocationScreen.route)}
 
     val scope = rememberCoroutineScope()
     // Navegar hacia atras, si no hay fragmentos en la pila de retroceso, navegar a la pantalla de listas
@@ -344,7 +343,6 @@ private fun MainActivityScreen(
                 showAddFAB=true
                 playlistScreenFAB=true
                 showProfileFAB=true
-                mainViewModel.updateSongCount()
                 PlaylistsScreen(goBack,mainViewModel,preferencesViewModel,onPlaylistOpen,onPlaylistEdit)
             }
             composable(route = Screens.CreatePlaylistScreen.route){
@@ -359,7 +357,7 @@ private fun MainActivityScreen(
                 showAddFAB=true
                 playlistScreenFAB=false
                 showProfileFAB=true
-                SongsScreen(mainViewModel)
+                SongsScreen(mainViewModel,onSongMapClick)
             }
             composable(route = Screens.AddSongScreen.route){
                 // Se mostrará unicamente el boton del perfil (en orientación horizontal)
@@ -378,6 +376,14 @@ private fun MainActivityScreen(
                 showAddFAB=false
                 showProfileFAB=false
                 ProfileScreen(mainViewModel,preferencesViewModel)
+            }
+
+            composable(route = Screens.ConcertLocationScreen.route){
+                // Se mostrará unicamente el boton del perfil (en orientación horizontal)
+                showAddFAB=false
+                playlistScreenFAB=false
+                showProfileFAB=true
+                ConcertLocationScreen(mainViewModel)
             }
 
 

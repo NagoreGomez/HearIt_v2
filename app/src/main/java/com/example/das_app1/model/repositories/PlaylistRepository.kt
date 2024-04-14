@@ -2,27 +2,18 @@ package com.example.das_app1.model.repositories
 
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
-import androidx.compose.runtime.collectAsState
 import com.example.das_app1.model.dao.PlaylistDao
 import com.example.das_app1.model.entities.Playlist
 import com.example.das_app1.model.entities.PlaylistId
 import com.example.das_app1.model.entities.PlaylistSongs
 import com.example.das_app1.model.entities.Song
-import com.example.das_app1.model.entities.remotePlaylist
 import com.example.das_app1.utils.APIClient
 import com.example.das_app1.utils.playlistSongToRemotePlaylistSong
 import com.example.das_app1.utils.playlistToRemotePlaylist
 import com.example.das_app1.utils.remotePlaylistSongToPlaylistSong
 import com.example.das_app1.utils.remotePlaylistToPlaylist
 import com.example.das_app1.utils.remoteSongToSong
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -38,12 +29,11 @@ import javax.inject.Singleton
 
 interface IPlaylistRepository{
     suspend fun createPlaylist(playlist: Playlist): Boolean
-    fun editPlaylist(playlistId: String,plalistName: String):Int
+    suspend fun editPlaylist(playlistId: String,plalistName: String):Int
     fun getUserPlaylists(currentUser:String): Flow<List<Playlist>>
-    suspend fun removePlaylist(playlistId: PlaylistId): Boolean
+    suspend fun removePlaylist(id: String): Boolean
     fun getSongs(): Flow<List<Song>>
     fun getUserPlaylistSongs(playlistId: String): Flow<List<Song>>
-    fun updateSongCount():Int
     suspend fun addSongToPlaylist(songId: String, playlistId: String): Boolean
     suspend fun removeSongFromPlaylist(songId: String, playlistId: String): Boolean
 
@@ -84,6 +74,7 @@ class PlaylistRepository @Inject constructor(
     override suspend fun createPlaylist(playlist: Playlist): Boolean {
         return try {
             playlistDao.createPlaylist(playlist)
+            apiClient.createPlaylist(playlistToRemotePlaylist(playlist))
             true
         } catch (e: SQLiteConstraintException) {
             false
@@ -97,8 +88,10 @@ class PlaylistRepository @Inject constructor(
      * @param plalistName El nuevo nombre para la lista.
      * @return El número de listas editadas (debería ser 1 si la edición fue exitosa).
      */
-    override fun editPlaylist(playlistId: String, plalistName: String):Int{
-        return playlistDao.editPlaylist(playlistId, plalistName)
+    override suspend fun editPlaylist(playlistId: String, playlistName: String):Int{
+        Log.d(playlistName,playlistId)
+        apiClient.editPlaylist(playlistId,playlistName)
+        return playlistDao.editPlaylist(playlistId, playlistName)
     }
 
     /**
@@ -112,16 +105,11 @@ class PlaylistRepository @Inject constructor(
     }
 
 
-
-    /**
-     * Elimina una lista.
-     *
-     * @param playlistId El ID de la lista que se desea eliminar.
-     * @return true si la operación fue exitosa, false si ocurrió un error.
-     */
-    override suspend fun removePlaylist(playlistId: PlaylistId): Boolean {
+    override suspend fun removePlaylist(id: String): Boolean {
         return try {
+            val playlistId = PlaylistId(id)
             playlistDao.removePlaylist(playlistId)
+            apiClient.deletePlaylist(id)
             true
         } catch (e: SQLiteConstraintException) {
             false
@@ -147,14 +135,8 @@ class PlaylistRepository @Inject constructor(
         return playlistDao.getUserPlaylistSong(playlistId)
     }
 
-    /**
-     * Actualiza el recuento de canciones en todas las listas.
-     *
-     * @return El número de listas actualizadas.
-     */
-    override fun updateSongCount():Int{
-        return playlistDao.updateSongCount()
-    }
+
+
 
     /**
      * Añade una canción a una lista.
@@ -166,6 +148,7 @@ class PlaylistRepository @Inject constructor(
     override suspend fun addSongToPlaylist(songId: String, playlistId: String): Boolean {
         return try {
             playlistDao.addSongToPlaylist(songId, playlistId)
+            apiClient.addPlaylistSong(playlistId,songId)
             true
         } catch (e: SQLiteConstraintException) {
             false
@@ -182,6 +165,7 @@ class PlaylistRepository @Inject constructor(
     override suspend fun removeSongFromPlaylist(songId: String, playlistId: String): Boolean {
         return try {
             playlistDao.removeSongFromPlaylist(songId,playlistId)
+            apiClient.deletePlaylistSong(playlistId,songId)
             true
         } catch (e: SQLiteConstraintException) {
             false
@@ -193,7 +177,7 @@ class PlaylistRepository @Inject constructor(
 
     override suspend fun downloadPlaylistsFromRemote(username: String){
         playlistDao.deletePlaylists()
-        val playlistsList = apiClient.getPlaylists()
+        val playlistsList = apiClient.getUserPlaylists()
         playlistsList.map {playlistDao.addPlaylist(remotePlaylistToPlaylist(it))}
     }
 
@@ -203,8 +187,9 @@ class PlaylistRepository @Inject constructor(
     }
 
     override suspend fun downloadPlaylistsSongsFromRemote(username: String){
+        Log.d("aaaaaa","acttt")
         playlistDao.deletePlaylistsSongs()
-        val playlistsSongsList = apiClient.getPlaylistSongs()
+        val playlistsSongsList = apiClient.getUserPlaylistSongs()
         playlistsSongsList.map {playlistDao.addPlaylistSong(remotePlaylistSongToPlaylistSong(it))}
     }
 
