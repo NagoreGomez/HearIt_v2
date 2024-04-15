@@ -56,17 +56,26 @@ import com.example.das_app1.activities.main.screens.Screens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.content.res.Configuration
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.rounded.Alarm
+import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.LibraryMusic
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.Button
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import com.example.das_app1.activities.main.screens.ConcertCalendarScreen
 import com.example.das_app1.activities.main.screens.ConcertLocationScreen
 import com.example.das_app1.widgets.Widget
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlin.system.exitProcess
 
 
@@ -83,6 +92,7 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private val preferencesViewModel: PreferencesViewModel by viewModels()
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -96,6 +106,7 @@ class MainActivity : AppCompatActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
                     val downloadFinish=mainViewModel.downloadFinish
                     if (downloadFinish){
                         MainActivityScreen(mainViewModel=mainViewModel, preferencesViewModel = preferencesViewModel)
@@ -112,6 +123,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+
 
 }
 
@@ -143,6 +156,8 @@ private fun MainActivityScreen(
     var showProfileFAB by rememberSaveable { mutableStateOf(false) }
     // Indica si el FAB de add está en PlaylistScreen (para crear una nueva lista) o en SongsScreen (para añadir canciones a la lista)
     var playlistScreenFAB by rememberSaveable { mutableStateOf(false) }
+
+    var showAlarmFAB by rememberSaveable { mutableStateOf(false) }
 
 
 
@@ -190,7 +205,7 @@ private fun MainActivityScreen(
     val exit: () -> Unit = {exitAlert=true}
     val onPlaylistOpen: () -> Unit = {  navController.navigate(Screens.SongsScreen.route)}
     val onPlaylistEdit: () -> Unit = {navController.navigate(Screens.EditPlaylistScreen.route)}
-    val onSongMapClick: () -> Unit = { navController.navigate(Screens.ConcertLocationScreen.route)}
+    val onSongMapClick: () -> Unit = { navController.navigate(Screens.ConcertCalendarScreen.route)}
 
     val scope = rememberCoroutineScope()
     // Navegar hacia atras, si no hay fragmentos en la pila de retroceso, navegar a la pantalla de listas
@@ -330,6 +345,19 @@ private fun MainActivityScreen(
                     )
                 }
             }
+            if (showAlarmFAB){
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(Screens.ConcertLocationScreen.route)
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.LocationOn,
+                        contentDescription = "Location"
+                    )
+                }
+            }
+
         },
         floatingActionButtonPosition = FabPosition.End
     ) {padding ->
@@ -341,6 +369,7 @@ private fun MainActivityScreen(
             composable(route = Screens.PlaylistScreen.route){
                 // Se mostrarán los botones y el FAB add está en PlaylistScreen
                 showAddFAB=true
+                showAlarmFAB=false
                 playlistScreenFAB=true
                 showProfileFAB=true
                 PlaylistsScreen(goBack,mainViewModel,preferencesViewModel,onPlaylistOpen,onPlaylistEdit)
@@ -348,6 +377,7 @@ private fun MainActivityScreen(
             composable(route = Screens.CreatePlaylistScreen.route){
                 // Se mostrará unicamente el boton del perfil (en orientación horizontal)
                 showAddFAB=false
+                showAlarmFAB=false
                 showProfileFAB=true
                 CreatePlaylistScreen(goBack,mainViewModel)
             }
@@ -355,6 +385,7 @@ private fun MainActivityScreen(
             composable(route = Screens.SongsScreen.route){
                 // Se mostrarán los botones y el FAB add no está en PlaylistScreen
                 showAddFAB=true
+                showAlarmFAB=false
                 playlistScreenFAB=false
                 showProfileFAB=true
                 SongsScreen(mainViewModel,onSongMapClick)
@@ -362,18 +393,21 @@ private fun MainActivityScreen(
             composable(route = Screens.AddSongScreen.route){
                 // Se mostrará unicamente el boton del perfil (en orientación horizontal)
                 showAddFAB=false
+                showAlarmFAB=false
                 showProfileFAB=true
                 AddSongScreen(mainViewModel)
             }
             composable(route = Screens.EditPlaylistScreen.route){
                 // Se mostrará unicamente el boton del perfil (en orientación horizontal)
                 showAddFAB=false
+                showAlarmFAB=false
                 showProfileFAB=true
                 EditPlaylistScreen(goBack,mainViewModel)
             }
             composable(route = Screens.ProfileScreen.route){
                 // Se mostrará unicamente el boton del perfil (en orientación horizontal)
                 showAddFAB=false
+                showAlarmFAB=false
                 showProfileFAB=false
                 ProfileScreen(mainViewModel,preferencesViewModel)
             }
@@ -381,9 +415,19 @@ private fun MainActivityScreen(
             composable(route = Screens.ConcertLocationScreen.route){
                 // Se mostrará unicamente el boton del perfil (en orientación horizontal)
                 showAddFAB=false
+                showAlarmFAB=false
                 playlistScreenFAB=false
                 showProfileFAB=true
                 ConcertLocationScreen(mainViewModel)
+            }
+
+            composable(route = Screens.ConcertCalendarScreen.route){
+                // Se mostrará unicamente el boton del perfil (en orientación horizontal)
+                showAddFAB=false
+                showAlarmFAB=true
+                playlistScreenFAB=false
+                showProfileFAB=true
+                ConcertCalendarScreen(mainViewModel)
             }
 
 

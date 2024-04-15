@@ -26,5 +26,6 @@ data class Song(
     val name: String,
     val singer: String,
     val url: String,
-    val concertLocation: String
+    val concertLocation: String,
+    val concertDate: String
 )

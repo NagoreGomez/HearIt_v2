@@ -49,6 +49,7 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
     var songId by mutableStateOf(  "")
     var songSinger by mutableStateOf(  "")
     var singerConcertLocation by mutableStateOf(  "")
+    var singerConcertDate by mutableStateOf(  "")
 
 
     // Variables para la barra de búsqueda de la pantalla AddSongScreen

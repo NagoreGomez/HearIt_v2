@@ -40,22 +40,29 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.das_app1.R
 import com.example.das_app1.activities.main.MainViewModel
+import com.example.das_app1.activities.main.composables.ConcertCalendar
 import com.example.das_app1.activities.main.composables.ConcertLocation
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @Composable
-fun ConcertLocationScreen(
+fun ConcertCalendarScreen(
     mainViewModel: MainViewModel
 ) {
 
+    val concertDate= mainViewModel.singerConcertDate
     val concertLocationAddress = mainViewModel.singerConcertLocation
     mainViewModel.title= mainViewModel.songSinger
     val isVertical = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
-    ConcertLocation(
-        mainViewModel=mainViewModel,
-        isVertical=isVertical,
+    ConcertCalendar(
+        mainViewModel = mainViewModel,
+        isVertical = isVertical,
+        concertDate = concertDate,
         concertLocationAddress=concertLocationAddress
     )
+
 }
 
 

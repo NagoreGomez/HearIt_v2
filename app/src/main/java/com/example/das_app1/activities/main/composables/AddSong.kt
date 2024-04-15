@@ -62,7 +62,7 @@ fun AddSong (
     isVertical: Boolean
 ) {
     Column (
-        Modifier.padding(horizontal = if (isVertical) 50.dp else 100.dp,vertical=if (isVertical) 80.dp else 10.dp).fillMaxHeight(),
+        Modifier.padding(horizontal = if (isVertical) 40.dp else 100.dp,vertical=if (isVertical) 80.dp else 10.dp).fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -98,7 +98,7 @@ fun AddSong (
                     onValueChange = { mainViewModel.addSongQuery = it },
                     placeholder = { Text(stringResource(R.string.buscar_canciones)) },
                     modifier = Modifier
-                        .width(if (isVertical) 240.dp else 540.dp).height(60.dp)
+                        .width(if (isVertical) 265.dp else 540.dp).height(60.dp)
                         .padding(bottom = 8.dp)
                 )
             }

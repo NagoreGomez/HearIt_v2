@@ -37,6 +37,7 @@ import javax.inject.Inject
 import com.example.das_app1.utils.APIClient
 import com.example.das_app1.widgets.WidgetReceiver
 import com.example.das_app1.widgets.WidgetReceiver.Companion.UPDATE_ACTION
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 /*************************************************************************
  ****                      IdentificationActivity                     ****
@@ -71,10 +72,7 @@ class IdentificationActivity : FragmentActivity() {
                 ) {
 
                     // Permiso de notificación
-                    NotificationPermission()
-
-                    // Permiso para descargar
-                    StoragePermission()
+                    AskPermissions()
 
                     // Mostrar la pantalla de identificación
                     IdentificationScreen(
@@ -90,25 +88,24 @@ class IdentificationActivity : FragmentActivity() {
     @OptIn(ExperimentalPermissionsApi::class)
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
-    fun NotificationPermission(){
-        val permissionState = rememberPermissionState(
-            permission = Manifest.permission.POST_NOTIFICATIONS
+    fun AskPermissions(){
+        val permissions = arrayOf(
+            Manifest.permission.POST_NOTIFICATIONS,
+            Manifest.permission.READ_CALENDAR,
+            Manifest.permission.WRITE_CALENDAR,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.INTERNET
+        )
+        val permissionState = rememberMultiplePermissionsState(
+            permissions = permissions.toList()
+
         )
         LaunchedEffect(true){
-            permissionState.launchPermissionRequest()
+            permissionState.launchMultiplePermissionRequest()
         }
     }
 
-    @OptIn(ExperimentalPermissionsApi::class)
-    @Composable
-    fun StoragePermission(){
-        val permissionState2 = rememberPermissionState(
-            permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        LaunchedEffect(true){
-            permissionState2.launchPermissionRequest()
-        }
-    }
 
     /**
      * En caso de que el usuario haya conseguido registrarse exitosamente enviarle una notificacion

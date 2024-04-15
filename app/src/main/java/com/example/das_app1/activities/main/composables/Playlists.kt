@@ -67,7 +67,7 @@ fun Playlists(
 ){
     Column (
         Modifier
-            .padding(horizontal = if (isVertical) 50.dp else 100.dp, vertical = if (isVertical) 80.dp else 10.dp)
+            .padding(horizontal = if (isVertical) 40.dp else 100.dp, vertical = if (isVertical) 80.dp else 10.dp)
             .fillMaxHeight().fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top

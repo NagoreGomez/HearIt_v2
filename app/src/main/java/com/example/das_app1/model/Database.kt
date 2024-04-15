@@ -15,7 +15,7 @@ import com.example.das_app1.model.entities.Song
  *
  * @property playlistDao DAO para acceder a la tabla de listas y canciones en la base de datos.
  */
-@Database(entities = [Playlist::class, Song::class, PlaylistSongs::class], version = 5)
+@Database(entities = [Playlist::class, Song::class, PlaylistSongs::class], version = 6)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun playlistDao(): PlaylistDao
 }

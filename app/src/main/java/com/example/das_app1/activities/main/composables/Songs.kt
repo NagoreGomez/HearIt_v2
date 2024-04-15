@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Search
@@ -71,7 +72,7 @@ fun Songs(
     Column (
         Modifier
             .padding(
-                horizontal = if (isVertical) 50.dp else 100.dp,
+                horizontal = if (isVertical) 40.dp else 100.dp,
                 vertical = if (isVertical) 80.dp else 10.dp
             )
             .fillMaxHeight()
@@ -122,7 +123,7 @@ fun Songs(
                         onValueChange = { mainViewModel.songsQuery = it },
                         placeholder = { Text(stringResource(R.string.buscar_canciones)) },
                         modifier = Modifier
-                            .width(if (isVertical) 240.dp else 540.dp)
+                            .width(if (isVertical) 265.dp else 540.dp)
                             .height(60.dp)
                             .padding(bottom = 8.dp)
                     )
@@ -209,6 +210,18 @@ fun Songs(
                                     }
                                     Spacer(modifier = Modifier.width(8.dp))
 
+                                    // Icono para obtener informacion del cantante de la canción
+                                    IconButton(
+                                        onClick = { mainViewModel.songSinger=row.singer;mainViewModel.songId=row.id; mainViewModel.singerConcertLocation=row.concertLocation; mainViewModel.singerConcertDate=row.concertDate;onSongMapClick()},
+                                        modifier = Modifier.size(24.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Info,
+                                            contentDescription = "map",
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(18.dp))
+
                                     // Icono para eliminar canción
                                     IconButton(
                                         onClick = { mainViewModel.removeSongFromPlaylist(row.id) },
@@ -219,18 +232,9 @@ fun Songs(
                                             contentDescription = "delete",
                                         )
                                     }
-                                    Spacer(modifier = Modifier.width(15.dp))
 
-                                    // Icono para eliminar canción
-                                    IconButton(
-                                        onClick = { mainViewModel.songSinger=row.singer;mainViewModel.songId=row.id; mainViewModel.singerConcertLocation=row.concertLocation; onSongMapClick()},
-                                        modifier = Modifier.size(24.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Map,
-                                            contentDescription = "map",
-                                        )
-                                    }
+
+
                                 }
                             }
                         }

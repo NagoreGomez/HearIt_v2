@@ -2,8 +2,10 @@ package com.example.das_app1.activities.main.composables
 
 import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.location.Geocoder
+import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,12 +16,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,14 +32,17 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
 import com.example.das_app1.activities.main.MainViewModel
 import com.example.das_app1.utils.getLatLngFromAddress
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
@@ -50,8 +58,9 @@ fun ConcertLocation(
     isVertical: Boolean,
     concertLocationAddress: String
 ){
+    val context= LocalContext.current
     Column (
-        Modifier.padding(horizontal = if (isVertical) 50.dp else 100.dp,vertical=if (isVertical) 80.dp else 10.dp).fillMaxHeight(),
+        Modifier.padding(horizontal = if (isVertical) 40.dp else 100.dp,vertical=if (isVertical) 80.dp else 10.dp).fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -74,11 +83,69 @@ fun ConcertLocation(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(5.dp))
+        Text(
+            text = "Localización del siguiente concierto:",
+            style = TextStyle(
+                fontWeight = FontWeight.Normal,
+                fontSize = 17.sp
+            )
+        )
+        Spacer(modifier = Modifier.height(10.dp))
 
         val locationPermissionState = rememberPermissionState(
             permission = Manifest.permission.ACCESS_FINE_LOCATION
         )
+
+
+        // Obtener la geolocalizacion del usuario y calcular la distancia hasta el concierto
+        val locationState = remember { mutableStateOf<Location?>(null) }
+
+        DisposableEffect(Unit) {
+            if (locationPermissionState.status.isGranted) {
+                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+                if (ActivityCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                }
+                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                    locationState.value = location
+                }.addOnFailureListener { e ->
+                    Log.e("ConcertLocation", "Error al obtener la ubicación", e)
+                }
+            } else {
+                // Manejar el caso donde el permiso no está concedido
+                Log.e("ConcertLocation", "Permiso de ubicación denegado")
+            }
+
+            onDispose {
+            }
+        }
+        locationState.value?.let { currentLocation ->
+            getLatLngFromAddress(LocalContext.current, concertLocationAddress)?.let { (latitude, longitude) ->
+                val distance = currentLocation.distanceTo(Location("Concert").apply {
+                    this.latitude = latitude
+                    this.longitude = longitude
+                }) / 1000 // Convertir distancia a kilómetros
+
+                Text(
+                    text = "Se encuentra a $distance km",
+                    style = TextStyle(
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp
+                    )
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+        }
+
+
+
 
         LaunchedEffect(true) {
             if (!locationPermissionState.status.isGranted) {
@@ -86,11 +153,14 @@ fun ConcertLocation(
             }
         }
 
+        // Mostrar mapa con marcador del concierto
         if (locationPermissionState.status.isGranted) {
             getLatLngFromAddress(LocalContext.current, concertLocationAddress)?.let { (latitude, longitude) ->
+
                 val cameraPositionState = rememberCameraPositionState {
                     position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 10f)
                 }
+
                 GoogleMap(
                     modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState,

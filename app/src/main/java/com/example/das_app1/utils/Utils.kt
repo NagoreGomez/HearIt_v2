@@ -24,7 +24,8 @@ fun remoteSongToSong(remoteSong: remoteSong): Song {
         remoteSong.name,
         remoteSong.singer,
         remoteSong.url,
-        remoteSong.concert_location
+        remoteSong.concert_location,
+        remoteSong.concert_date
     )
 }
 
