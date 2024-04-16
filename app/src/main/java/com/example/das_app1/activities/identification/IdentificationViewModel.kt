@@ -91,19 +91,6 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
     }
 
 
-    // Instancia para hashear contraseñas con el algoritmo SHA-512
-    private val md = MessageDigest.getInstance("SHA-512")
-
-    // Funcion de la clase String que devuelve el hash del mismo
-    fun String.hash(): String {
-        val messageDigest = md.digest(this.toByteArray())
-        val no = BigInteger(1, messageDigest)
-        var hashText = no.toString(16)
-        while (hashText.length < 32) {
-            hashText = "0$hashText"
-        }
-        return hashText
-    }
 
     /**
      * Se encarga de crear el nuevo usuario, comprobando que el usuario no exista.
