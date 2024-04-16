@@ -1,6 +1,6 @@
 package com.example.das_app1.model.repositories
 
-import com.example.das_app1.model.entities.remoteUser
+import com.example.das_app1.model.entities.RemoteUser
 import com.example.das_app1.preferences.ILastLoggedUser
 import com.example.das_app1.utils.AuthenticationClient
 import com.example.das_app1.utils.AuthenticationException
@@ -18,8 +18,8 @@ import javax.inject.Singleton
  */
 
 interface IIdentificationRepository: ILastLoggedUser{
-    suspend fun authenticateUser(remoteUser: remoteUser): Boolean
-    suspend fun createUser(remoteUser: remoteUser): Boolean
+    suspend fun authenticateUser(remoteUser: RemoteUser): Boolean
+    suspend fun createUser(remoteUser: RemoteUser): Boolean
 }
 
 /*************************************************************************
@@ -31,7 +31,7 @@ interface IIdentificationRepository: ILastLoggedUser{
  * Este repositorio proporciona métodos para la identificación de usuarios, así como para la creación
  * de nuevos usuarios en la base de datos.
  *
- * @property userDao DAO para acceder a la tabla de usuarios en la base de datos (inyectado por Hilt).
+ * @property authenticationClient Cliente HTTP para hacer peticiones a la API para identificarse.
  * @property lastLoggedUser Interfaz para gestionar el último usuario identificado (inyectado por Hilt).
  */
 
@@ -57,7 +57,7 @@ class IdentificationRepository @Inject constructor(
 
 
     @Throws(Exception::class)
-    override suspend fun authenticateUser(remoteUser: remoteUser): Boolean {
+    override suspend fun authenticateUser(remoteUser: RemoteUser): Boolean {
         return try {
             authenticationClient.authenticate(remoteUser)
             true
@@ -67,7 +67,7 @@ class IdentificationRepository @Inject constructor(
     }
 
 
-    override suspend fun createUser(remoteUser: remoteUser): Boolean {
+    override suspend fun createUser(remoteUser: RemoteUser): Boolean {
         return try {
             authenticationClient.createUser(remoteUser)
             true

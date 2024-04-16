@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.das_app1.model.entities.remoteUser
+import com.example.das_app1.model.entities.RemoteUser
 import com.example.das_app1.model.repositories.IIdentificationRepository
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -67,7 +67,7 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
     }
 
 
-    suspend fun checkUserLogin(remoteUser: remoteUser): Boolean {
+    suspend fun checkUserLogin(remoteUser: RemoteUser): Boolean {
         return identificationRepository.authenticateUser(remoteUser)
 
     }
@@ -78,8 +78,8 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
      * @return nombre de usuario si el inicio de sesión es correcto, sino null.
      */
     @Throws(Exception::class)
-    suspend fun checkLogin(): remoteUser? {
-        val user= remoteUser(loginUsername,loginPassword)
+    suspend fun checkLogin(): RemoteUser? {
+        val user= RemoteUser(loginUsername,loginPassword)
         isLoginCorrect = checkUserLogin(user)
         return if (isLoginCorrect) user else null
     }
@@ -111,7 +111,7 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
      * @return nombre de usuario si el registro es correcto, sino null.
      */
     suspend fun checkSignIn(): String? {
-        val newUser = remoteUser(signInUsername, signInPassword)
+        val newUser = RemoteUser(signInUsername, signInPassword)
         val signInCorrect = identificationRepository.createUser(newUser)
         signInUserExists = !signInCorrect
         return if (signInCorrect) newUser.username else null

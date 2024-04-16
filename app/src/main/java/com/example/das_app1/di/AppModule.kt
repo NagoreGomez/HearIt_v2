@@ -47,7 +47,7 @@ object AppModule {
     @Provides
     fun providesDatabase(@ApplicationContext app:Context)=
         Room.databaseBuilder(app,AppDatabase::class.java,"database.db")
-            .createFromAsset("database/database.db").fallbackToDestructiveMigration()
+            .createFromAsset("database/database.db")
             .build()
 
 
@@ -65,7 +65,7 @@ object AppModule {
     /**
      * Proporciona el repositorio de identificación.
      *
-     * @param userDao DAO de autenticación.
+     * @param authenticationClient cliente HTTP para identificación.
      * @param lastLoggedUser Último usuario conectado.
      * @return Repositorio de inicio de sesión.
      */
@@ -77,6 +77,7 @@ object AppModule {
      * Proporciona el repositorio de listas.
      *
      * @param playlistDao DAO de listas.
+     * @param apiClient cliente HTTP para peticiones identificadas.
      * @return Repositorio de listas.
      */
     @Singleton
@@ -87,6 +88,7 @@ object AppModule {
      * Proporciona la implementación de `ILastLoggedUser`.
      *
      * @param app Contexto de la aplicación.
+     * @param apiClient cliente HTTP para peticiones identificadas.
      * @return Implementación de `ILastLoggedUser`.
      */
     @Singleton
@@ -97,6 +99,7 @@ object AppModule {
      * Proporciona el repositorio de preferencias de la aplicación.
      *
      * @param app Contexto de la aplicación.
+     * @param apiClient cliente HTTP para peticiones identificadas.
      * @return Repositorio de preferencias.
      */
     @Singleton

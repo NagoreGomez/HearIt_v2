@@ -11,7 +11,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.das_app1.MyNotificationChannels
 import com.example.das_app1.R
-import com.example.das_app1.activities.main.MainActivity
 
 class AlarmReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {

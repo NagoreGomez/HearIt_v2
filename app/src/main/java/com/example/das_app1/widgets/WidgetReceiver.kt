@@ -11,9 +11,7 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.appwidget.updateAll
 import androidx.glance.state.PreferencesGlanceStateDefinition
-import com.example.das_app1.activities.main.composables.Playlists
 import com.example.das_app1.model.entities.CompactPlaylist
-import com.example.das_app1.model.entities.Playlist
 import com.example.das_app1.model.repositories.PlaylistRepository
 import com.example.das_app1.preferences.ILastLoggedUser
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,9 +27,7 @@ class WidgetReceiver: GlanceAppWidgetReceiver() {
 
     override val glanceAppWidget: GlanceAppWidget = Widget()
 
-
     private val coroutineScope = MainScope()
-
 
     @Inject
     lateinit var playlistRepository: PlaylistRepository
@@ -83,8 +79,6 @@ class WidgetReceiver: GlanceAppWidgetReceiver() {
             glanceAppWidget.updateAll(context)
         }
     }
-
-
 
     companion object {
         const val UPDATE_ACTION = "updateAction"

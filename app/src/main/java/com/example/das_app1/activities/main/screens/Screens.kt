@@ -13,13 +13,12 @@ package com.example.das_app1.activities.main.screens
  */
 
 sealed class Screens (val route: String) {
-    object PlaylistScreen: Screens("playlist_screen")
-    object CreatePlaylistScreen: Screens("create_playlist_screen")
-    object SongsScreen: Screens("songs_screen")
-    object AddSongScreen: Screens("add_song_screen")
-    object EditPlaylistScreen: Screens("edit_playlist_screen")
-    object ProfileScreen: Screens("profile_screen")
-    object ConcertLocationScreen: Screens("concert_location_screen")
-
-    object ConcertCalendarScreen: Screens("concert_calendar_screen")
+    data object PlaylistScreen: Screens("playlist_screen")
+    data object CreatePlaylistScreen: Screens("create_playlist_screen")
+    data object SongsScreen: Screens("songs_screen")
+    data object AddSongScreen: Screens("add_song_screen")
+    data object EditPlaylistScreen: Screens("edit_playlist_screen")
+    data object ProfileScreen: Screens("profile_screen")
+    data object ConcertLocationScreen: Screens("concert_location_screen")
+    data object ConcertCalendarScreen: Screens("concert_calendar_screen")
 }

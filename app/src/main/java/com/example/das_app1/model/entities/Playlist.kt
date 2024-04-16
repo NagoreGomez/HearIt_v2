@@ -1,11 +1,8 @@
 package com.example.das_app1.model.entities
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 /**
  * Clase que representa el identificador de una lista en la base de datos,
@@ -26,7 +23,7 @@ data class PlaylistId(val id: String)
  * el nombre de su propietario, su nombre y la cantidad de canciones que contiene.
  *
  * @property id El identificador único de la lista.
- * @property ownerUsername El nombre de usuario [User] del propietario de la lista.
+ * @property ownerUsername El nombre de usuario del propietario de la lista.
  * @property name El nombre de la lista.
  * @property songCount La cantidad de canciones que contiene la lista.
  */

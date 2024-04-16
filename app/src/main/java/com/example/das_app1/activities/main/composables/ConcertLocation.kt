@@ -1,10 +1,7 @@
 package com.example.das_app1.activities.main.composables
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
-import android.content.res.Configuration
-import android.location.Geocoder
 import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,10 +21,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -37,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import com.example.das_app1.R
 import com.example.das_app1.activities.main.MainViewModel
 import com.example.das_app1.utils.getLatLngFromAddress
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -45,12 +40,12 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.launch
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ConcertLocation(
@@ -60,7 +55,12 @@ fun ConcertLocation(
 ){
     val context= LocalContext.current
     Column (
-        Modifier.padding(horizontal = if (isVertical) 40.dp else 100.dp,vertical=if (isVertical) 80.dp else 10.dp).fillMaxHeight(),
+        Modifier
+            .padding(
+                horizontal = if (isVertical) 40.dp else 100.dp,
+                vertical = if (isVertical) 80.dp else 10.dp
+            )
+            .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -85,7 +85,7 @@ fun ConcertLocation(
         }
         Spacer(modifier = Modifier.height(5.dp))
         Text(
-            text = "Localización del siguiente concierto:",
+            text = stringResource(R.string.localizaci_n_del_siguiente_concierto),
             style = TextStyle(
                 fontWeight = FontWeight.Normal,
                 fontSize = 17.sp
@@ -104,20 +104,20 @@ fun ConcertLocation(
         DisposableEffect(Unit) {
             if (locationPermissionState.status.isGranted) {
                 val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-                if (ActivityCompat.checkSelfPermission(
-                        context,
+                if (ActivityCompat.checkSelfPermission(context,
                         Manifest.permission.ACCESS_FINE_LOCATION
                     ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                         context,
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
+                    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                        locationState.value = location
+                    }.addOnFailureListener { e ->
+                        Log.e("ConcertLocation", "Error al obtener la ubicación", e)
+                    }
                 }
-                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                    locationState.value = location
-                }.addOnFailureListener { e ->
-                    Log.e("ConcertLocation", "Error al obtener la ubicación", e)
-                }
+
             } else {
                 // Manejar el caso donde el permiso no está concedido
                 Log.e("ConcertLocation", "Permiso de ubicación denegado")
@@ -134,7 +134,7 @@ fun ConcertLocation(
                 }) / 1000 // Convertir distancia a kilómetros
 
                 Text(
-                    text = "Se encuentra a $distance km",
+                    text = stringResource(R.string.se_encuentra_a_km, distance.toInt()),
                     style = TextStyle(
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp
@@ -168,7 +168,7 @@ fun ConcertLocation(
                 ) {
                     Marker(
                         state = MarkerState(position = LatLng(latitude, longitude)),
-                        title = "Next concert location",
+                        title = stringResource(R.string.concierto_de, mainViewModel.songSinger),
                         snippet = concertLocationAddress
                     )
                 }
@@ -181,7 +181,7 @@ fun ConcertLocation(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Ubicación no disponible")
+                        Text(text = stringResource(R.string.ubicaci_n_no_disponible))
                     }
                 }
             }
@@ -194,7 +194,7 @@ fun ConcertLocation(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = "Permiso de ubicación denegado")
+                    Text(text = stringResource(R.string.permiso_de_ubicaci_n_denegado))
                 }
             }
         }

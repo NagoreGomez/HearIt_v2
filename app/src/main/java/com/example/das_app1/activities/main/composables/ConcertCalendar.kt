@@ -1,114 +1,67 @@
 package com.example.das_app1.activities.main.composables
 
-import android.content.res.Configuration
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Alarm
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.das_app1.R
 import com.example.das_app1.activities.main.MainViewModel
-import com.example.das_app1.activities.main.composables.ConcertLocation
 import com.example.das_app1.alarm.AlarmScheduler
 import com.example.das_app1.alarm.ConcertAlarm
 import com.example.das_app1.utils.addEventToCalendar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
 
-fun convertDateToMillisAndRestADay(dateString: String): Long {
-    val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    format.timeZone = TimeZone.getTimeZone("UTC")
-    val date = format.parse(dateString)
-
-    val calendar = Calendar.getInstance().apply {
-        time = date ?: Date()
-        add(Calendar.DAY_OF_MONTH, -1) // Restar un día
-    }
-
-    return calendar.timeInMillis
-}
-
-fun convertDateToMillis(dateString: String): Long {
-    val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    format.timeZone = TimeZone.getTimeZone("UTC")
-    val date = format.parse(dateString)
-    return date?.time ?: 0
-}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConcertCalendar(
     mainViewModel: MainViewModel,
     isVertical: Boolean,
     concertDate: String,
+    concertDateMillis: Long,
+    concertAlarmMillis: Long,
     concertLocationAddress: String
 ) {
 
 
     val context = LocalContext.current
 
-    // El recordatorio del calendario siempre el dia del concierto y la alarma un dia antes (por defecto) o cuando el usuario quiera
-    val concertDataMillis= convertDateToMillis(concertDate)
-    val concertDataAlarmMillis= convertDateToMillisAndRestADay(concertDate)
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = concertDataAlarmMillis)
-    Log.d("Fecha", datePickerState.selectedDateMillis.toString())
+    // EStablecer por defecto la fecha de la alarma un dia antes
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = concertAlarmMillis)
 
 
     val scheduler= AlarmScheduler(context = context)
@@ -120,29 +73,48 @@ fun ConcertCalendar(
         val selectedDate = dateFormat.format(Date(datePickerState.selectedDateMillis ?: 0))
 
         AlertDialog(
-            title = { Text( "Añadir alarma y recordatorio", style = TextStyle(fontSize = 17.sp)) },
-            text = {Text("Se programará una alarma para el dia $selectedDate y un recordatorio para el dia del concierto $concertDate")},
+            title = { Text(stringResource(R.string.a_adir_alarma_y_recordatorio), style = TextStyle(fontSize = 17.sp)) },
+            text = {Text(
+                stringResource(
+                    R.string.se_programar_una_alarma_para_el_d_a_y_un_recordatorio_para_el_dia_del_concierto,
+                    selectedDate,
+                    concertDate
+                ))},
             confirmButton = {
                 TextButton(onClick = {
-                    addEventToCalendar(
-                        context,
-                        "Recordatorio del concierto de ${mainViewModel.songSinger}" ,
-                        "Ubicación: $concertLocationAddress",
-                        concertDataMillis
-                    )
-                    val date = LocalDateTime.ofInstant(Instant.ofEpochMilli(datePickerState.selectedDateMillis!!), ZoneId.systemDefault()).toLocalDate()
-                    scheduler.schedule(
-                        ConcertAlarm(
-                            time = LocalDateTime.of(date.year, date.monthValue, date.dayOfMonth, LocalDateTime.now().hour, LocalDateTime.now().plusMinutes(1).minute),
-                            title = "Recordatorio del concierto de ${mainViewModel.songSinger}",
-                            body = "Fecha: $concertDate, Ubicación: $concertLocationAddress"
+                    try{
+                        addEventToCalendar(
+                            context,
+                            context.getString(
+                                R.string.recordatorio_del_concierto_de,
+                                mainViewModel.songSinger
+                            ) ,
+                            context.getString(R.string.ubicaci_n, concertLocationAddress),
+                            concertDateMillis
                         )
-                    )
-                    //Toast.makeText(context, "Alarma añadida", Toast.LENGTH_LONG).show()
-                    showAlert = false
+                        val date = LocalDateTime.ofInstant(Instant.ofEpochMilli(datePickerState.selectedDateMillis!!), ZoneId.systemDefault()).toLocalDate()
+                        scheduler.schedule(
+                            ConcertAlarm(
+                                time = LocalDateTime.of(date.year, date.monthValue, date.dayOfMonth, LocalDateTime.now().hour, LocalDateTime.now().plusMinutes(1).minute),
+                                title = context.getString(R.string.recordatorio_del_concierto_de, mainViewModel.songSinger),
+                                body = context.getString(
+                                    R.string.fecha_ubicaci_n,
+                                    concertDate,
+                                    concertLocationAddress
+                                )
+                            )
+                        )
+                        Toast.makeText(context,
+                            context.getString(R.string.alarma_y_recordatorio_a_adidos), Toast.LENGTH_LONG).show()
+                        showAlert = false
+                    }catch (e: Exception){
+                        showAlert = false
+                        Toast.makeText(context,
+                            context.getString(R.string.error_al_a_adir_alarma_y_recordatorio), Toast.LENGTH_LONG).show()
+                    }
 
                 }) {
-                    Text(text = "Añadir")
+                    Text(text = stringResource(R.string.a_adir))
                 }
             },
             dismissButton = {
@@ -194,7 +166,7 @@ fun ConcertCalendar(
         ){
             Spacer(modifier = Modifier.height(5.dp))
             Text(
-                text = "Fecha del siguiente concierto:",
+                text = stringResource(R.string.fecha_del_siguiente_concierto),
                 style = TextStyle(
                     fontWeight = FontWeight.Normal,
                     fontSize = 17.sp
@@ -233,11 +205,12 @@ fun ConcertCalendar(
 
                         }
                         else{
-                            Toast.makeText(context, "Selecciona una fecha por favor", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context,
+                                context.getString(R.string.selecciona_una_fecha_por_favor), Toast.LENGTH_LONG).show()
                         }
                     }
                 ) {
-                    Text(text = "Añadir alarma y recordatorio")
+                    Text(text = stringResource(R.string.a_adir_alarma_y_recordatorio))
                 }
             }
         }

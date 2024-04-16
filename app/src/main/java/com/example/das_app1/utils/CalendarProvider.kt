@@ -2,13 +2,11 @@ package com.example.das_app1.utils
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.provider.CalendarContract
 import android.util.Log
 import android.provider.CalendarContract.Events
-import android.widget.Toast
 import java.util.TimeZone
 
 
@@ -37,7 +35,7 @@ fun getAllCalendarIds(context: Context): List<Long> {
     return calendarIds
 }
 
-fun addEventToCalendar(context: Context, title: String, description: String, startTimeMillis: Long) {
+fun addEventToCalendar(context: Context, title: String, description: String, startTimeMillis: Long){
     val contentResolver: ContentResolver = context.contentResolver
     val ids = getAllCalendarIds(context)
     val timeZone = TimeZone.getDefault().id
@@ -56,9 +54,11 @@ fun addEventToCalendar(context: Context, title: String, description: String, sta
 
         if (uri != null) {
             Log.d("Añadido al calendario", "uri: $uri")
-            //Toast.makeText(context, "Recordatorio añadido al calendario", Toast.LENGTH_LONG).show()
         } else {
-            Log.d("Error al añadir al calendario", "uri: $uri")
+            Log.d("Error al añadir al calendario", "uri null")
         }
     }
 }
+
+
+

@@ -1,6 +1,5 @@
 package com.example.das_app1.activities.main.screens
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.das_app1.activities.main.MainViewModel
@@ -28,7 +27,6 @@ import java.nio.file.Files
 /**
  * ProfileScreen es la pantalla para visualizar el perfil del usuario.
  *
- * @param goBack devolución de llamada para navegar hacia atrás.
  * @param mainViewModel [MainViewModel] contiene los estados y llamadas necesarias.
  * @param preferencesViewModel [PreferencesViewModel] contiene los estados y llamadas necesarias para gestionar las preferencias.
  */

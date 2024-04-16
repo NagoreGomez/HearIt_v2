@@ -1,7 +1,6 @@
 package com.example.das_app1.activities.main.screens
 
 import android.content.res.Configuration
-import androidx.activity.compose.BackHandler
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton

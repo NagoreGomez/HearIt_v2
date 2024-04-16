@@ -2,14 +2,10 @@ package com.example.das_app1.widgets
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
-import androidx.glance.Button
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
@@ -27,9 +23,7 @@ import androidx.glance.appwidget.updateAll
 import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
-import androidx.glance.layout.Box
 import androidx.glance.layout.Column
-import androidx.glance.layout.ContentScale
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
@@ -48,12 +42,7 @@ import com.example.das_app1.widgets.WidgetReceiver.Companion.todayVisitsDataKey
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import com.example.das_app1.R
-import com.example.das_app1.ui.theme.md_theme_dark_background
 import com.example.das_app1.ui.theme.md_theme_light_background
-import com.example.das_app1.ui.theme.md_theme_light_inversePrimary
-import com.example.das_app1.widgets.WidgetReceiver.Companion.UPDATE_ACTION
-
-
 
 class Widget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -149,7 +138,6 @@ class Widget : GlanceAppWidget() {
         }
     }
 
-
      class RefreshAction : ActionCallback {
         override suspend fun onAction(
             context: Context,
@@ -159,21 +147,4 @@ class Widget : GlanceAppWidget() {
             Widget().updateAll(context)
         }
     }
-
-    /*
-    val context = LocalContext.current
-    Widget().refresh(context)
-     */
-    fun refresh(context:Context){
-        actionRunCallback<RefreshAction>()
-        val intent = Intent(context, WidgetReceiver::class.java).apply {
-            action = UPDATE_ACTION
-        }
-        context.sendBroadcast(intent)
-    }
-
-
-
-
-
 }

@@ -10,8 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.das_app1.R
 import com.example.das_app1.model.entities.Playlist
-import com.example.das_app1.model.entities.PlaylistId
-import com.example.das_app1.model.entities.PlaylistSongs
 import com.example.das_app1.model.entities.Song
 import com.example.das_app1.model.repositories.IPlaylistRepository
 import com.google.gson.GsonBuilder
@@ -113,7 +111,7 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
 
     }
 
-    // Obtiener las canciones de la lista seleccionada en formato JSON.
+    // Obtiener las canciones de la lista seleccionada en formato JSON
     fun getUserPlaylistSongsJson(context: Context): String {
         val gsonBuilder = GsonBuilder().setPrettyPrinting().create()
         return runBlocking {
@@ -145,57 +143,15 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
         }
     }
 
-    suspend fun downloadPlaylistsFromRemote() {
+    private suspend fun downloadPlaylistsFromRemote() {
         playlistRepository.downloadPlaylistsFromRemote(username)
     }
 
-    suspend fun downloadSongsFromRemote() {
+    private suspend fun downloadSongsFromRemote() {
         playlistRepository.downloadSongsFromRemote()
     }
 
-    suspend fun downloadPlaylistsSongsFromRemote() {
+    private suspend fun downloadPlaylistsSongsFromRemote() {
         playlistRepository.downloadPlaylistsSongsFromRemote(username)
     }
-
-
-    var uploadFinish by mutableStateOf(false)
-    fun uploadData(playlistList: List<Playlist>, playlistSongsList: List<PlaylistSongs>) {
-        Log.d("actual",playlistList.toString())
-        CoroutineScope(Dispatchers.IO).launch {
-            try{
-                uploadPlaylistsToRemote(playlistList)
-                uploadPlaylistsSongsToRemote(playlistSongsList)
-                uploadFinish = true
-
-            }catch (e: Exception) {
-                Log.d("ERROR",e.toString())
-            }
-        }
-    }
-
-    fun getAllPlaylists(): Flow<List<Playlist>>{
-        return playlistRepository.getAllPlaylists()
-    }
-
-    fun getAllPlaylistsSongs(): Flow<List<PlaylistSongs>>{
-        return playlistRepository.getAllPlaylistsSongs()
-    }
-
-    suspend fun uploadPlaylistsToRemote(playlistList: List<Playlist>){
-        playlistRepository.uploadPlaylistsToRemote(playlistList)
-    }
-
-    suspend fun uploadPlaylistsSongsToRemote(playlistSongsList: List<PlaylistSongs>){
-        playlistRepository.uploadPlaylistsSongsToRemote(playlistSongsList)
-    }
-
-
-    fun getConcertLocation(): Pair<Double, Double> {
-        // Simulación de obtener la ubicación del concierto desde la base de datos
-        Log.d("aaaaaa",songId)
-        return Pair(40.7128, -74.0060)  // Latitud y longitud de ejemplo (Nueva York)
-    }
-
-
-
 }

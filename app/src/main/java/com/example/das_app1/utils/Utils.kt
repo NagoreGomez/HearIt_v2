@@ -4,12 +4,12 @@ import android.content.Context
 import android.location.Geocoder
 import com.example.das_app1.model.entities.Playlist
 import com.example.das_app1.model.entities.PlaylistSongs
-import com.example.das_app1.model.entities.remotePlaylist
-import com.example.das_app1.model.entities.remoteSong
+import com.example.das_app1.model.entities.RemotePlaylist
+import com.example.das_app1.model.entities.RemoteSong
 import com.example.das_app1.model.entities.Song
-import com.example.das_app1.model.entities.remotePlaylistSongs
+import com.example.das_app1.model.entities.RemotePlaylistSongs
 
-fun remotePlaylistToPlaylist(remotePlaylist: remotePlaylist): Playlist {
+fun remotePlaylistToPlaylist(remotePlaylist: RemotePlaylist): Playlist {
     return Playlist(
         remotePlaylist.id,
         remotePlaylist.owner_username,
@@ -18,7 +18,7 @@ fun remotePlaylistToPlaylist(remotePlaylist: remotePlaylist): Playlist {
     )
 }
 
-fun remoteSongToSong(remoteSong: remoteSong): Song {
+fun remoteSongToSong(remoteSong: RemoteSong): Song {
     return Song(
         remoteSong.id,
         remoteSong.name,
@@ -29,7 +29,7 @@ fun remoteSongToSong(remoteSong: remoteSong): Song {
     )
 }
 
-fun remotePlaylistSongToPlaylistSong(remotePlaylistSongs: remotePlaylistSongs): PlaylistSongs {
+fun remotePlaylistSongToPlaylistSong(remotePlaylistSongs: RemotePlaylistSongs): PlaylistSongs {
     return PlaylistSongs(
         remotePlaylistSongs.song_id,
         remotePlaylistSongs.playlist_id
@@ -37,8 +37,8 @@ fun remotePlaylistSongToPlaylistSong(remotePlaylistSongs: remotePlaylistSongs): 
 
 }
 
-fun playlistToRemotePlaylist(playlist: Playlist): remotePlaylist {
-    return remotePlaylist(
+fun playlistToRemotePlaylist(playlist: Playlist): RemotePlaylist {
+    return RemotePlaylist(
         playlist.id,
         playlist.ownerUsername,
         playlist.name,
@@ -46,12 +46,6 @@ fun playlistToRemotePlaylist(playlist: Playlist): remotePlaylist {
     )
 }
 
-fun playlistSongToRemotePlaylistSong(playlistSong: PlaylistSongs): remotePlaylistSongs {
-    return remotePlaylistSongs(
-        playlistSong.playlistId,
-        playlistSong.songId
-    )
-}
 
 fun getLatLngFromAddress(context: Context, mAddress: String): Pair<Double, Double>? {
     val coder = Geocoder(context)

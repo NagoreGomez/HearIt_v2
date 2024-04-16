@@ -77,5 +77,20 @@
     <string name="create_your_first_playlist">Create your first playlist!</string>
     <string name="songs">%1$s songs</string>
     <string name="siguiente_concierto_de">%1$s\'s next concert</string>
+    <string name="ubicaci_n_no_disponible">Location not available</string>
+    <string name="concierto_de">%1$s concert</string>
+    <string name="se_encuentra_a_km">Located at %1$s km</string>
+    <string name="localizaci_n_del_siguiente_concierto">Location of the next concert:</string>
+    <string name="permiso_de_ubicaci_n_denegado">Location permission denied</string>
+    <string name="a_adir_alarma_y_recordatorio">Add alarm and reminder</string>
+    <string name="se_programar_una_alarma_para_el_d_a_y_un_recordatorio_para_el_dia_del_concierto">An alarm will be programmed for day %1$s and a reminder for concert day %2$s</string>
+    <string name="recordatorio_del_concierto_de">Reminder of the %1$s concert</string>
+    <string name="ubicaci_n">Ubication: %1$s</string>
+    <string name="fecha_ubicaci_n">Date: %1$s, Ubication %2$s</string>
+    <string name="alarma_y_recordatorio_a_adidos">Alarm and reminder added</string>
+    <string name="error_al_a_adir_alarma_y_recordatorio">Error adding alarm and reminder</string>
+    <string name="a_adir">Add</string>
+    <string name="fecha_del_siguiente_concierto">Date of the next concert:</string>
+    <string name="selecciona_una_fecha_por_favor">Please select a date</string>
 
 </resources>

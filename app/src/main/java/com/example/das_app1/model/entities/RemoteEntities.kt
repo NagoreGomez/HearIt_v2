@@ -1,17 +1,16 @@
 package com.example.das_app1.model.entities
 
-import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class remoteUser(
+data class RemoteUser(
     val username: String,
     val password: String = "",
 )
 
 @Serializable
-data class remotePlaylist(
+data class RemotePlaylist(
     val id: String,
     val owner_username: String,
     val name: String,
@@ -19,13 +18,13 @@ data class remotePlaylist(
 )
 
 @Serializable
-data class remotePlaylistSongs(
+data class RemotePlaylistSongs(
     val playlist_id: String,
     val song_id: String
 )
 
 @Serializable
-data class remoteSong(
+data class RemoteSong(
     val id: String,
     val name: String,
     val singer: String,

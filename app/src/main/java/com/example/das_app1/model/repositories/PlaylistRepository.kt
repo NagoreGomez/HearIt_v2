@@ -8,14 +8,11 @@ import com.example.das_app1.model.entities.PlaylistId
 import com.example.das_app1.model.entities.PlaylistSongs
 import com.example.das_app1.model.entities.Song
 import com.example.das_app1.utils.APIClient
-import com.example.das_app1.utils.playlistSongToRemotePlaylistSong
 import com.example.das_app1.utils.playlistToRemotePlaylist
 import com.example.das_app1.utils.remotePlaylistSongToPlaylistSong
 import com.example.das_app1.utils.remotePlaylistToPlaylist
 import com.example.das_app1.utils.remoteSongToSong
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,7 +26,7 @@ import javax.inject.Singleton
 
 interface IPlaylistRepository{
     suspend fun createPlaylist(playlist: Playlist): Boolean
-    suspend fun editPlaylist(playlistId: String,plalistName: String):Int
+    suspend fun editPlaylist(playlistId: String,playlistName: String):Int
     fun getUserPlaylists(currentUser:String): Flow<List<Playlist>>
     suspend fun removePlaylist(id: String): Boolean
     fun getSongs(): Flow<List<Song>>
@@ -40,8 +37,6 @@ interface IPlaylistRepository{
     suspend fun downloadPlaylistsFromRemote(username: String)
     suspend fun downloadSongsFromRemote()
     suspend fun downloadPlaylistsSongsFromRemote(username: String)
-    suspend fun uploadPlaylistsToRemote(playlistList: List<Playlist>)
-    suspend fun uploadPlaylistsSongsToRemote(playlistSongsList: List<PlaylistSongs>)
     fun getAllPlaylists(): Flow<List<Playlist>>
     fun getAllPlaylistsSongs(): Flow<List<PlaylistSongs>>
 }
@@ -57,6 +52,7 @@ interface IPlaylistRepository{
  * obtener las canciones de una lista...
  *
  * @property playlistDao El DAO que proporciona métodos de acceso a la base de datos para las listas (inyectado por Hilt).
+ * @property apiClient Cliente HTTP para hacer peticiones identificadas a la API.
  */
 
 @Singleton
@@ -85,7 +81,7 @@ class PlaylistRepository @Inject constructor(
      * Edita el nombre de una lista.
      *
      * @param playlistId El ID de la lista que se desea editar.
-     * @param plalistName El nuevo nombre para la lista.
+     * @param playlistName El nuevo nombre para la lista.
      * @return El número de listas editadas (debería ser 1 si la edición fue exitosa).
      */
     override suspend fun editPlaylist(playlistId: String, playlistName: String):Int{
@@ -187,17 +183,11 @@ class PlaylistRepository @Inject constructor(
     }
 
     override suspend fun downloadPlaylistsSongsFromRemote(username: String){
-        Log.d("aaaaaa","acttt")
         playlistDao.deletePlaylistsSongs()
         val playlistsSongsList = apiClient.getUserPlaylistSongs()
         playlistsSongsList.map {playlistDao.addPlaylistSong(remotePlaylistSongToPlaylistSong(it))}
     }
 
-
-    override suspend fun uploadPlaylistsToRemote(playlistList: List<Playlist>){
-        val remotePlaylistList = playlistList.map { playlistToRemotePlaylist(it) }
-        apiClient.uploadPlaylists(remotePlaylistList)
-    }
 
     override fun getAllPlaylists(): Flow<List<Playlist>>{
         return playlistDao.getAllPlaylists()
@@ -205,11 +195,6 @@ class PlaylistRepository @Inject constructor(
 
     override fun getAllPlaylistsSongs(): Flow<List<PlaylistSongs>>{
         return playlistDao.getAllPlaylistsSongs()
-    }
-
-    override suspend fun uploadPlaylistsSongsToRemote(playlistSongsList: List<PlaylistSongs>){
-        val remotePlaylistSongsList = playlistSongsList.map { playlistSongToRemotePlaylistSong(it) }
-        apiClient.uploadPlaylistsSongs(remotePlaylistSongsList)
     }
 
 }

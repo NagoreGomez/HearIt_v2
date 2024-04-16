@@ -57,25 +57,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.content.res.Configuration
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LibraryMusic
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.material3.Button
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
 import com.example.das_app1.activities.main.screens.ConcertCalendarScreen
 import com.example.das_app1.activities.main.screens.ConcertLocationScreen
-import com.example.das_app1.widgets.Widget
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlin.system.exitProcess
 
 
@@ -163,12 +154,8 @@ private fun MainActivityScreen(
 
     // ***************** DIALOGOS *****************
     var exitAlert by rememberSaveable { mutableStateOf(false) }
-    var showUploadingAlert by rememberSaveable { mutableStateOf(false) }
 
     if (exitAlert){
-        val playlists=mainViewModel.getAllPlaylists().collectAsState(initial = emptyList()).value
-        val playlistsSongs=mainViewModel.getAllPlaylistsSongs().collectAsState(initial = emptyList()).value
-
         AlertDialog(
             title = { Text(stringResource(R.string.quiere_cerrar_la_aplicacion), style = TextStyle(fontSize = 17.sp)) },
             confirmButton = {
@@ -185,19 +172,6 @@ private fun MainActivityScreen(
         )
     }
 
-    if (showUploadingAlert ){
-        if (!mainViewModel.uploadFinish){
-            AlertDialog(
-                onDismissRequest = { /* No hacer nada al intentar cerrar */ },
-                title = { Text(text = stringResource(R.string.subiendo_datos_y_cerrando_apliacaci_n), style = TextStyle(fontSize = 18.sp)) },
-                text = { Text(text = stringResource(R.string.espere_por_favor)) },
-                confirmButton = { }
-            )
-        }
-        else {
-            exitProcess(0)
-        }
-    }
 
 
 

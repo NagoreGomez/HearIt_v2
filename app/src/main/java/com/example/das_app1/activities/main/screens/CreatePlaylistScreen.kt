@@ -1,8 +1,6 @@
 package com.example.das_app1.activities.main.screens
 
 import android.content.res.Configuration
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -65,7 +63,6 @@ fun CreatePlaylistScreen (
 
     // Actualizar título
     mainViewModel.title= stringResource(R.string.nueva_playlist)
-    Log.d("HOLA2", "HOLAA2")
 
     val isVertical= LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
