@@ -31,11 +31,10 @@ import io.ktor.serialization.kotlinx.json.*
 import java.io.ByteArrayOutputStream
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.example.das_app1.model.entities.Playlist
-import com.example.das_app1.model.entities.remoteUser
-import com.example.das_app1.model.entities.remotePlaylist
-import com.example.das_app1.model.entities.remotePlaylistSongs
-import com.example.das_app1.model.entities.remoteSong
+import com.example.das_app1.model.entities.RemoteUser
+import com.example.das_app1.model.entities.RemotePlaylist
+import com.example.das_app1.model.entities.RemotePlaylistSongs
+import com.example.das_app1.model.entities.RemoteSong
 import kotlinx.coroutines.runBlocking
 
 /*******************************************************************************
@@ -59,16 +58,11 @@ private val bearerTokenStorage = mutableListOf<BearerTokens>()
 @Singleton
 class AuthenticationClient @Inject constructor() {
 
-
     private val httpClient = HttpClient(CIO) {
 
-        // If return code is not a 2xx then throw an exception
         expectSuccess = true
-
-        // Install JSON handler (allows to receive and send JSON data)
         install(ContentNegotiation) { json() }
 
-        // Handle non 2xx status responses
         HttpResponseValidator {
             handleResponseExceptionWithRequest { exception, _ ->
                 when {
@@ -84,7 +78,7 @@ class AuthenticationClient @Inject constructor() {
     }
 
     @Throws(AuthenticationException::class, Exception::class)
-    suspend fun authenticate(user: remoteUser) {
+    suspend fun authenticate(user: RemoteUser) {
         val tokenInfo: TokenInfo = httpClient.submitForm(
             url = "http://34.136.150.204:8000/identificate",
             formParameters = Parameters.build {
@@ -99,29 +93,17 @@ class AuthenticationClient @Inject constructor() {
     }
 
     @Throws(UserExistsException::class)
-    suspend fun createUser(user: remoteUser) {
+    suspend fun createUser(user: RemoteUser) {
         Log.d(user.username,user.password)
         httpClient.post("http://34.136.150.204:8000/users") {
             contentType(ContentType.Application.Json)
             setBody(user)
         }
     }
-
-
 }
 
-
-/**
- * HTTP Client that makes authenticated petitions to REST API.
- *
- * It manages automatic access token refresh.
- */
 @Singleton
 class APIClient @Inject constructor() {
-
-    /*************************************************
-     **         Initialization and Installs         **
-     *************************************************/
 
     private val httpClient = HttpClient(CIO) {
 
@@ -163,40 +145,24 @@ class APIClient @Inject constructor() {
         }
     }
 
-    suspend fun getUserPlaylists(): List<remotePlaylist> = runBlocking {
+    suspend fun getUserPlaylists(): List<RemotePlaylist> = runBlocking {
         val response = httpClient.get("http://34.136.150.204:8000/userPlaylists")
         response.body()
     }
 
-    suspend fun getSongs(): List<remoteSong> = runBlocking {
+    suspend fun getSongs(): List<RemoteSong> = runBlocking {
         val response = httpClient.get("http://34.136.150.204:8000/songs")
         response.body()
     }
 
-    suspend fun getUserPlaylistSongs(): List<remotePlaylistSongs> = runBlocking {
+    suspend fun getUserPlaylistSongs(): List<RemotePlaylistSongs> = runBlocking {
         val response = httpClient.get("http://34.136.150.204:8000/playlistsSongs")
         response.body()
     }
 
 
-    suspend fun uploadPlaylists(playlistList: List<remotePlaylist>) = runBlocking{
-        httpClient.post("http://34.136.150.204:8000/uploadPlaylists"){
-            contentType(ContentType.Application.Json)
-            setBody(playlistList)
-        }
-    }
 
-    suspend fun uploadPlaylistsSongs(playlistSongsList: List<remotePlaylistSongs>) = runBlocking{
-        httpClient.post("http://34.136.150.204:8000/uploadPlaylistSongs"){
-            contentType(ContentType.Application.Json)
-            setBody(playlistSongsList)
-        }
-    }
-
-
-
-
-    suspend fun createPlaylist(remotePlaylist: remotePlaylist) = runBlocking {
+    suspend fun createPlaylist(remotePlaylist: RemotePlaylist) = runBlocking {
         httpClient.post("http://34.136.150.204:8000/createPlaylist") {
             contentType(ContentType.Application.Json)
             setBody(remotePlaylist)
@@ -236,8 +202,6 @@ class APIClient @Inject constructor() {
 
 
 
-    //--------   User subscription to FCM   --------//
-
     suspend fun subscribeUser(FCMClientToken: String) {
         Log.d("subs",FCMClientToken)
         httpClient.post("http://34.136.150.204:8000/notifications/subscribe") {
@@ -246,7 +210,6 @@ class APIClient @Inject constructor() {
         }
     }
 
-    //----------   User's profile image   ----------//
 
     suspend fun getUserProfile(): Bitmap {
         val response = httpClient.get("http://34.136.150.204:8000/profile/image")
