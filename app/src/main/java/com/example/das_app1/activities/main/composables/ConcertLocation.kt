@@ -111,11 +111,11 @@ fun ConcertLocation(
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
-                    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                        locationState.value = location
-                    }.addOnFailureListener { e ->
-                        Log.e("ConcertLocation", "Error al obtener la ubicación", e)
-                    }
+                }
+                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                    locationState.value = location
+                }.addOnFailureListener { e ->
+                    Log.e("ConcertLocation", "Error al obtener la ubicación", e)
                 }
 
             } else {

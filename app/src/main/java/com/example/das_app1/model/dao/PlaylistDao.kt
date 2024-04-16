@@ -47,8 +47,8 @@ interface PlaylistDao {
      * @return Un [Flow] que emite la lista de listas del usuario.
      */
     @Transaction
-    @Query("SELECT * FROM PlayList WHERE ownerUsername = :user ORDER BY name ASC")
-    fun getUserPlaylists(user: String): Flow<List<Playlist>>
+    @Query("SELECT * FROM PlayList ORDER BY name ASC")
+    fun getUserPlaylists(): Flow<List<Playlist>>
 
     /**
      * Elimina una lista de la base de datos.

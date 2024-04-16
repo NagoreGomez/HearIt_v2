@@ -27,7 +27,7 @@ import javax.inject.Singleton
 interface IPlaylistRepository{
     suspend fun createPlaylist(playlist: Playlist): Boolean
     suspend fun editPlaylist(playlistId: String,playlistName: String):Int
-    fun getUserPlaylists(currentUser:String): Flow<List<Playlist>>
+    fun getUserPlaylists(): Flow<List<Playlist>>
     suspend fun removePlaylist(id: String): Boolean
     fun getSongs(): Flow<List<Song>>
     fun getUserPlaylistSongs(playlistId: String): Flow<List<Song>>
@@ -93,11 +93,10 @@ class PlaylistRepository @Inject constructor(
     /**
      * Obtiene todas las listas de un usuario.
      *
-     * @param currentUser El nombre de usuario del usuario cuyas listas se desean obtener.
      * @return Un flujo que emite una lista de todas las listas del usuario especificado.
      */
-    override fun getUserPlaylists(currentUser:String): Flow<List<Playlist>>{
-        return playlistDao.getUserPlaylists(currentUser)
+    override fun getUserPlaylists(): Flow<List<Playlist>>{
+        return playlistDao.getUserPlaylists()
     }
 
 

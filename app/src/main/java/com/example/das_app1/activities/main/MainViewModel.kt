@@ -74,7 +74,7 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
 
     // Obtiene las listas de un usuario
     fun getUserPlaylists(): Flow<List<Playlist>>{
-        return playlistRepository.getUserPlaylists(username)
+        return playlistRepository.getUserPlaylists()
     }
 
 

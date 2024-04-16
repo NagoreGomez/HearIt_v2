@@ -59,7 +59,7 @@ class WidgetReceiver: GlanceAppWidgetReceiver() {
             val currentUsername = lastLoggedUser.getLastLoggedUser()
 
             val playlistData = if (currentUsername != null) {
-                playlistRepository.getUserPlaylists(currentUsername).first().map(::CompactPlaylist)
+                playlistRepository.getUserPlaylists().first().map(::CompactPlaylist)
             } else emptyList()
 
             Log.d("Widget", "Coroutine - Data-Length: ${playlistData.size}")
