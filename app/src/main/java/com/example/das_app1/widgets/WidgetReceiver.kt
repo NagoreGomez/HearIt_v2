@@ -58,8 +58,6 @@ class WidgetReceiver: GlanceAppWidgetReceiver() {
 
 
             val currentUsername = lastLoggedUser.getLastLoggedUser()
-            if (currentUsername != null) {
-            }
 
             val playlistData = if (currentUsername != null) {
                 playlistRepository.getUserPlaylists().first().map(::CompactPlaylist)
