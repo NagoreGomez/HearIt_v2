@@ -13,7 +13,6 @@ data class ConcertAlarm(
     val body: String
 )
 interface IAlarmScheduler {
-    // Function to schedule a future activity
     fun schedule(concertAlarm: ConcertAlarm)
 }
 

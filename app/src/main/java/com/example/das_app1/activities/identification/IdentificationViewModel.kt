@@ -89,7 +89,6 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
     // Actualizar el último nombre de usuario identificado
     fun updateLastLoggedUsername(username: String) = runBlocking {
         identificationRepository.setLastLoggedUser(username)
-        Log.d("hola", username)
     }
 
 
