@@ -1,5 +1,6 @@
 package com.example.das_app1.activities.identification
 
+import android.util.Log
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -88,6 +89,7 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
     // Actualizar el último nombre de usuario identificado
     fun updateLastLoggedUsername(username: String) = runBlocking {
         identificationRepository.setLastLoggedUser(username)
+        Log.d("hola", username)
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.das_app1.activities.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -65,8 +66,12 @@ import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import com.example.das_app1.activities.main.screens.ConcertCalendarScreen
 import com.example.das_app1.activities.main.screens.ConcertLocationScreen
+import com.example.das_app1.widgets.Widget
+import com.example.das_app1.widgets.WidgetReceiver
+import com.example.das_app1.widgets.WidgetReceiver.Companion.UPDATE_ACTION
 import kotlin.system.exitProcess
 
 
@@ -90,7 +95,14 @@ class MainActivity : AppCompatActivity() {
         setContent {
             // Recargar el idioma
             preferencesViewModel.reloadLang(preferencesViewModel.prefLang.collectAsState(initial = preferencesViewModel.currentSetLang).value)
-            if (!mainViewModel.downloadFinish)mainViewModel.downloadData()
+
+           // Descargar los datos
+            if (!mainViewModel.downloadFinish) mainViewModel.downloadData()
+
+            // Actualizar el widget una vez descargados los datos
+            val context = LocalContext.current
+            val intent = Intent(context, WidgetReceiver::class.java).apply { action = UPDATE_ACTION }
+            context.sendBroadcast(intent)
 
             DAS_LANATheme(preferencesViewModel)  {
                 Surface(

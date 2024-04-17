@@ -56,7 +56,11 @@ class WidgetReceiver: GlanceAppWidgetReceiver() {
         coroutineScope.launch {
             Log.d("Widget", "Coroutine Called")
 
+
             val currentUsername = lastLoggedUser.getLastLoggedUser()
+            if (currentUsername != null) {
+                Log.d("hola2", currentUsername)
+            }
 
             val playlistData = if (currentUsername != null) {
                 playlistRepository.getUserPlaylists().first().map(::CompactPlaylist)

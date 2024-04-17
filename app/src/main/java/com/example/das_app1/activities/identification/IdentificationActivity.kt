@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.glance.appwidget.action.actionRunCallback
 import com.example.das_app1.MyNotificationChannels
 import com.example.das_app1.activities.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
 import com.google.android.gms.tasks.OnCompleteListener
 import javax.inject.Inject
 import com.example.das_app1.utils.APIClient
+import com.example.das_app1.widgets.Widget
 import com.example.das_app1.widgets.WidgetReceiver
 import com.example.das_app1.widgets.WidgetReceiver.Companion.UPDATE_ACTION
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -141,10 +143,6 @@ class IdentificationActivity : FragmentActivity() {
 
         // Subscribe user
         subscribeUser()
-
-        // Update Widgets
-        val updateIntent = Intent(this, WidgetReceiver::class.java).apply { action = UPDATE_ACTION }
-        this.sendBroadcast(updateIntent)
 
         // Llamar a la actividad principal
         val intent = Intent(this, MainActivity::class.java).apply {

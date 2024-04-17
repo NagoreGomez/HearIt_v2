@@ -2,6 +2,7 @@ package com.example.das_app1.widgets
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +44,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import com.example.das_app1.R
 import com.example.das_app1.ui.theme.md_theme_light_background
+import com.example.das_app1.widgets.WidgetReceiver.Companion.UPDATE_ACTION
 
 class Widget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -147,4 +149,5 @@ class Widget : GlanceAppWidget() {
             Widget().updateAll(context)
         }
     }
+
 }
