@@ -2,6 +2,7 @@ package com.example.das_app1.model.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 import java.util.*
 
 /*************************************************************************
@@ -22,10 +23,25 @@ import java.util.*
 
 @Entity(tableName = "Song")
 data class Song(
-    @PrimaryKey val id: String = UUID.randomUUID().toString(),
+    @PrimaryKey val id: String,
     val name: String,
     val singer: String,
     val url: String,
     val concertLocation: String,
     val concertDate: String
 )
+
+
+@Serializable
+data class CompactSong(
+    val id: String,
+    val name: String,
+    val url: String,
+) {
+    constructor(song: Song) : this(
+        id = song.id,
+        name = song.name,
+        url = song.url
+    )
+
+}

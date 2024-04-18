@@ -3,6 +3,9 @@ package com.example.das_app1.widgets
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,12 +42,18 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import com.example.das_app1.model.entities.CompactPlaylist
 import com.example.das_app1.widgets.WidgetReceiver.Companion.currentUserKey
-import com.example.das_app1.widgets.WidgetReceiver.Companion.todayVisitsDataKey
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import com.example.das_app1.R
+import com.example.das_app1.model.entities.CompactPlaylistSongs
+import com.example.das_app1.model.entities.CompactSong
+import com.example.das_app1.model.entities.Song
 import com.example.das_app1.ui.theme.md_theme_light_background
-import com.example.das_app1.widgets.WidgetReceiver.Companion.UPDATE_ACTION
+import com.example.das_app1.widgets.WidgetReceiver.Companion.playlists
+import com.example.das_app1.widgets.WidgetReceiver.Companion.songs
+
+
+
 
 class Widget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -57,15 +66,18 @@ class Widget : GlanceAppWidget() {
     @SuppressLint("StringFormatMatches")
     @Composable
     private fun Content() {
-
         val prefs = currentState<Preferences>()
         val context = LocalContext.current
 
-
         val user = prefs[currentUserKey]
-        val data: String? = prefs[todayVisitsDataKey]
-        val playlistList: List<CompactPlaylist> = if (data != null) Json.decodeFromString(data) else emptyList()
+        val playlists: String? = prefs[playlists]
+        val playlistList: List<CompactPlaylist> = if (playlists != null) Json.decodeFromString(playlists) else emptyList()
 
+        val songs: String? = prefs[songs]
+        val songsList: List<CompactSong> = if (songs != null) Json.decodeFromString(songs) else emptyList()
+
+        val playlistsSongs: String? = prefs[WidgetReceiver.playlistsSongs]
+        val playlistsSongsList: List<CompactPlaylistSongs> = if (playlistsSongs != null) Json.decodeFromString(playlistsSongs) else emptyList()
 
         Column(
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
@@ -74,16 +86,14 @@ class Widget : GlanceAppWidget() {
                 .background(color = md_theme_light_background)
                 .padding(16.dp)
         ) {
-
             Text(
                 text = if (user != null) context.getString(R.string.your_playlist, user) else " ",
                 modifier = GlanceModifier.fillMaxWidth().padding(bottom = 16.dp),
                 maxLines = 1,
-                style =TextStyle(fontWeight = FontWeight.Medium, fontSize = 17.sp, textAlign = TextAlign.Center),
+                style = TextStyle(fontWeight = FontWeight.Medium, fontSize = 17.sp, textAlign = TextAlign.Center),
             )
 
             when {
-
                 user == null -> {
                     Column(
                         verticalAlignment = Alignment.CenterVertically,
@@ -93,7 +103,6 @@ class Widget : GlanceAppWidget() {
                         Text(text = context.getString(R.string.login_please))
                     }
                 }
-
                 playlistList.isEmpty() -> {
                     Column(
                         verticalAlignment = Alignment.CenterVertically,
@@ -103,26 +112,46 @@ class Widget : GlanceAppWidget() {
                         Text(text = context.getString(R.string.create_your_first_playlist))
                     }
                 }
-
                 else -> {
                     LazyColumn(modifier = GlanceModifier.fillMaxSize().defaultWeight()) {
                         items(playlistList, itemId = { it.hashCode().toLong() }) { item ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
+                            Column(
+                                horizontalAlignment = Alignment.Start,
                                 modifier = GlanceModifier.fillMaxWidth().padding(vertical = 8.dp)
                             ) {
                                 Text(
                                     text = item.name,
-                                    style = TextStyle(fontWeight = FontWeight.Medium, fontSize = 16.sp, textAlign = TextAlign.Left),
-                                    modifier = GlanceModifier.defaultWeight()
+                                    style = TextStyle(fontWeight = FontWeight.Medium, fontSize = 16.sp),
+                                    modifier = GlanceModifier.padding(bottom = 4.dp)
                                 )
 
-                                Spacer(modifier = GlanceModifier.width(16.dp))
+                                val playlistSongs = getSongs(item.id, playlistsSongsList, songsList)
+
+                                playlistSongs.forEach { song ->
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = GlanceModifier.fillMaxWidth().padding(vertical = 4.dp).clickable{
+                                            Log.d("URL SONG", song.url)
+                                            val url = song.url.trim()
+                                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK // Añade la bandera aquí
+                                            context.startActivity(intent)
+
+                                        }
+                                    ) {
+                                        Text(
+                                            text = song.name,
+                                            style = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp, textAlign = TextAlign.Left),
+                                            modifier = GlanceModifier.defaultWeight()
+                                        )
+
+                                    }
+                                }
 
                                 Text(
                                     text = context.getString(R.string.songs, item.songCount),
                                     style = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp, textAlign = TextAlign.Center),
-                                    modifier = GlanceModifier.defaultWeight()
+                                    modifier = GlanceModifier.padding(top = 4.dp)
                                 )
                             }
                         }
@@ -136,9 +165,15 @@ class Widget : GlanceAppWidget() {
                 contentDescription = "Refresh",
                 modifier = GlanceModifier.size(25.dp).clickable{ actionRunCallback<RefreshAction>()}
             )
-
         }
     }
+
+
+    private fun getSongs(playlistID: String, playlistSongs: List<CompactPlaylistSongs>, songs: List<CompactSong>): List<CompactSong>{
+        val songIdsInPlaylist = playlistSongs.filter { it.playlistId == playlistID }.map { it.songId }
+        return songs.filter { it.id in songIdsInPlaylist }
+    }
+
 
      class RefreshAction : ActionCallback {
         override suspend fun onAction(

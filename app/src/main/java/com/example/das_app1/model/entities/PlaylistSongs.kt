@@ -2,6 +2,7 @@ package com.example.das_app1.model.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import kotlinx.serialization.Serializable
 
 /*************************************************************************
  ****                          PlaylistSongs                          ****
@@ -31,3 +32,15 @@ data class PlaylistSongs(
     val songId: String,
     val playlistId: String
 )
+
+@Serializable
+data class CompactPlaylistSongs(
+    val songId: String,
+    val playlistId: String
+) {
+    constructor(playlistSong: PlaylistSongs) : this(
+        songId = playlistSong.songId,
+        playlistId = playlistSong.playlistId
+    )
+
+}
