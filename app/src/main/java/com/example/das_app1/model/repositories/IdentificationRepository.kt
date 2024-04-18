@@ -2,9 +2,8 @@ package com.example.das_app1.model.repositories
 
 import com.example.das_app1.model.entities.RemoteUser
 import com.example.das_app1.preferences.ILastLoggedUser
-import com.example.das_app1.utils.AuthenticationClient
-import com.example.das_app1.utils.AuthenticationException
-import com.example.das_app1.utils.UserExistsException
+import com.example.das_app1.utils.APIClient
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -38,7 +37,7 @@ interface IIdentificationRepository: ILastLoggedUser{
 @Singleton
 class IdentificationRepository @Inject constructor(
     private val lastLoggedUser: ILastLoggedUser,
-    private val authenticationClient: AuthenticationClient,
+    private val apiClient: APIClient
 ) :IIdentificationRepository {
 
     /**
@@ -56,12 +55,15 @@ class IdentificationRepository @Inject constructor(
     override suspend fun setLastLoggedUser(username: String) = lastLoggedUser.setLastLoggedUser(username)
 
 
-    @Throws(Exception::class)
+
     override suspend fun authenticateUser(remoteUser: RemoteUser): Boolean {
         return try {
-            authenticationClient.authenticate(remoteUser)
+            apiClient.authenticate(remoteUser)
             true
-        } catch (e: AuthenticationException) {
+        } catch (e:IOException){
+            throw IOException("Sever error", e)
+        }
+        catch (e: Exception) {
             false
         }
     }
@@ -69,9 +71,12 @@ class IdentificationRepository @Inject constructor(
 
     override suspend fun createUser(remoteUser: RemoteUser): Boolean {
         return try {
-            authenticationClient.createUser(remoteUser)
+            apiClient.createUser(remoteUser)
             true
-        } catch (e: UserExistsException) {
+        } catch (e:IOException){
+            throw IOException("Sever error", e)
+        }
+        catch (e: Exception) {
             false
         }
     }

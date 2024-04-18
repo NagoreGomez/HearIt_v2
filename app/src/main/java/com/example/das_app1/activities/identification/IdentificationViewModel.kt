@@ -13,6 +13,7 @@ import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.math.BigInteger
 import java.security.MessageDigest
 
@@ -68,7 +69,7 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
     }
 
 
-    suspend fun checkUserLogin(remoteUser: RemoteUser): Boolean {
+    private suspend fun checkUserLogin(remoteUser: RemoteUser): Boolean {
         return identificationRepository.authenticateUser(remoteUser)
 
     }
@@ -78,11 +79,15 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
      *
      * @return nombre de usuario si el inicio de sesión es correcto, sino null.
      */
-    @Throws(Exception::class)
+
     suspend fun checkLogin(): RemoteUser? {
-        val user= RemoteUser(loginUsername,loginPassword)
-        isLoginCorrect = checkUserLogin(user)
-        return if (isLoginCorrect) user else null
+        try{
+            val user= RemoteUser(loginUsername,loginPassword)
+            isLoginCorrect = checkUserLogin(user)
+            return if (isLoginCorrect) user else null
+        } catch (e:IOException){
+            throw IOException("Sever error", e)
+        }
     }
 
 
@@ -99,10 +104,15 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
      * @return nombre de usuario si el registro es correcto, sino null.
      */
     suspend fun checkSignIn(): String? {
-        val newUser = RemoteUser(signInUsername, signInPassword)
-        val signInCorrect = identificationRepository.createUser(newUser)
-        signInUserExists = !signInCorrect
-        return if (signInCorrect) newUser.username else null
+        try{
+            val newUser = RemoteUser(signInUsername, signInPassword)
+            val signInCorrect = identificationRepository.createUser(newUser)
+            signInUserExists = !signInCorrect
+            return if (signInCorrect) newUser.username else null
+        }catch (e:IOException){
+            throw IOException("Sever error", e)
+        }
+
     }
 
 

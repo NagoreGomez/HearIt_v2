@@ -172,7 +172,7 @@ class PlaylistRepository @Inject constructor(
 
     override suspend fun downloadPlaylistsFromRemote(username: String){
         playlistDao.deletePlaylists()
-        val playlistsList = apiClient.getUserPlaylists()
+        val playlistsList = apiClient.getUserPlaylists(username)
         playlistsList.map {playlistDao.addPlaylist(remotePlaylistToPlaylist(it))}
     }
 
@@ -183,7 +183,7 @@ class PlaylistRepository @Inject constructor(
 
     override suspend fun downloadPlaylistsSongsFromRemote(username: String){
         playlistDao.deletePlaylistsSongs()
-        val playlistsSongsList = apiClient.getUserPlaylistSongs()
+        val playlistsSongsList = apiClient.getUserPlaylistSongs(username)
         playlistsSongsList.map {playlistDao.addPlaylistSong(remotePlaylistSongToPlaylistSong(it))}
     }
 

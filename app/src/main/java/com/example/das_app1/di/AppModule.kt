@@ -12,7 +12,6 @@ import com.example.das_app1.preferences.ILastLoggedUser
 import com.example.das_app1.preferences.IPreferencesRepository
 import com.example.das_app1.preferences.PreferencesRepository
 import com.example.das_app1.utils.APIClient
-import com.example.das_app1.utils.AuthenticationClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -71,7 +70,7 @@ object AppModule {
      */
     @Singleton
     @Provides
-    fun provideIdentificationRepository(lastLoggedUser: ILastLoggedUser, authenticationClient: AuthenticationClient): IIdentificationRepository=IdentificationRepository(lastLoggedUser,authenticationClient)
+    fun provideIdentificationRepository(lastLoggedUser: ILastLoggedUser, apiClient: APIClient): IIdentificationRepository=IdentificationRepository(lastLoggedUser,apiClient)
 
     /**
      * Proporciona el repositorio de listas.

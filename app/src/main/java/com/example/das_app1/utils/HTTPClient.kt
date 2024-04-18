@@ -41,22 +41,10 @@ import kotlinx.coroutines.runBlocking
  ****                               Exceptions                              ****
  *******************************************************************************/
 
-class AuthenticationException : Exception()
-class UserExistsException : Exception()
 
-
-@Serializable
-data class TokenInfo(
-    @SerialName("access_token") val accessToken: String,
-    @SerialName("expires_in") val expiresIn: Int,
-    @SerialName("refresh_token") val refreshToken: String,
-    @SerialName("token_type") val tokenType: String,
-)
-
-private val bearerTokenStorage = mutableListOf<BearerTokens>()
 
 @Singleton
-class AuthenticationClient @Inject constructor() {
+class APIClient @Inject constructor() {
 
     private val httpClient = HttpClient(CIO) {
 
@@ -66,10 +54,11 @@ class AuthenticationClient @Inject constructor() {
         HttpResponseValidator {
             handleResponseExceptionWithRequest { exception, _ ->
                 when {
-                    exception is ClientRequestException && exception.response.status == HttpStatusCode.Unauthorized -> throw AuthenticationException()
-                    exception is ClientRequestException && exception.response.status == HttpStatusCode.Conflict -> throw UserExistsException()
+                    exception is ClientRequestException && exception.response.status == HttpStatusCode.Unauthorized -> Log.d("HTTP unahutorized", exception.toString())
+                    exception is ClientRequestException && exception.response.status == HttpStatusCode.Conflict -> Log.d("HTTP conflict", exception.toString())
                     else -> {
                         exception.printStackTrace()
+                        Log.d("HTTP", exception.toString())
                         throw exception
                     }
                 }
@@ -77,76 +66,22 @@ class AuthenticationClient @Inject constructor() {
         }
     }
 
-    @Throws(AuthenticationException::class, Exception::class)
     suspend fun authenticate(user: RemoteUser) {
-        val tokenInfo: TokenInfo = httpClient.submitForm(
-            url = "http://34.136.150.204:8000/identificate",
-            formParameters = Parameters.build {
-                append("grant_type", "password")
-                append("username", user.username)
-                append("password", user.password)
-            }).body()
-
-        bearerTokenStorage.add(BearerTokens(tokenInfo.accessToken, tokenInfo.refreshToken))
-        Log.d("token", bearerTokenStorage.last().toString())
+        httpClient.post("http://34.136.150.204:8000/identificate") {
+            contentType(ContentType.Application.Json)
+            setBody(user)
+        }
 
     }
 
-    @Throws(UserExistsException::class)
     suspend fun createUser(user: RemoteUser) {
-        Log.d(user.username,user.password)
         httpClient.post("http://34.136.150.204:8000/users") {
             contentType(ContentType.Application.Json)
             setBody(user)
         }
     }
-}
-
-@Singleton
-class APIClient @Inject constructor() {
-
-    private val httpClient = HttpClient(CIO) {
-
-        // If return code is not a 2xx then throw an exception
-        expectSuccess = true
-
-        // Install JSON handler (allows to receive and send JSON data)
-        install(ContentNegotiation) { json() }
-
-        // Install Bearer Authentication Handler
-        install(Auth) {
-            bearer {
-
-                // Define where to get tokens from
-                loadTokens { bearerTokenStorage.last() }
-
-
-                // Send always the token, do not  wait for a 401 before adding the token to the header
-                sendWithoutRequest { request -> request.url.host == "http://34.136.150.204:8000" }
-
-                // Define token refreshing flow
-                refreshTokens {
-
-                    // Get the new token
-                    val refreshTokenInfo: TokenInfo = client.submitForm(
-                        url = "http://34.136.150.204:8000/auth/refresh",
-                        formParameters = Parameters.build {
-                            append("grant_type", "refresh_token")
-                            append("refresh_token", oldTokens?.refreshToken ?: "")
-                        }
-                    ) { markAsRefreshTokenRequest() }.body()
-
-                    // Add tokens to Token Storage and return the newest one
-                    bearerTokenStorage.add(BearerTokens(refreshTokenInfo.accessToken, oldTokens?.refreshToken!!))
-                    bearerTokenStorage.last()
-
-                }
-            }
-        }
-    }
-
-    suspend fun getUserPlaylists(): List<RemotePlaylist> = runBlocking {
-        val response = httpClient.get("http://34.136.150.204:8000/userPlaylists")
+    suspend fun getUserPlaylists(username: String): List<RemotePlaylist> = runBlocking {
+        val response = httpClient.get("http://34.136.150.204:8000/userPlaylists?user=$username")
         response.body()
     }
 
@@ -155,8 +90,8 @@ class APIClient @Inject constructor() {
         response.body()
     }
 
-    suspend fun getUserPlaylistSongs(): List<RemotePlaylistSongs> = runBlocking {
-        val response = httpClient.get("http://34.136.150.204:8000/playlistsSongs")
+    suspend fun getUserPlaylistSongs(username: String): List<RemotePlaylistSongs> = runBlocking {
+        val response = httpClient.get("http://34.136.150.204:8000/playlistsSongs?user=$username")
         response.body()
     }
 
@@ -211,19 +146,19 @@ class APIClient @Inject constructor() {
     }
 
 
-    suspend fun getUserProfile(): Bitmap {
-        val response = httpClient.get("http://34.136.150.204:8000/profile/image")
+    suspend fun getUserProfile(username: String): Bitmap {
+        val response = httpClient.get("http://34.136.150.204:8000/profile/image?user=$username")
         val image: ByteArray = response.body()
         return BitmapFactory.decodeByteArray(image, 0, image.size)
     }
 
-    suspend fun uploadUserProfile(image: Bitmap) {
+    suspend fun uploadUserProfile(image: Bitmap, username: String) {
         val stream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.PNG, 100, stream)
         val byteArray = stream.toByteArray()
 
         httpClient.submitFormWithBinaryData(
-            url = "http://34.136.150.204:8000/profile/image",
+            url = "http://34.136.150.204:8000/profile/image?user=$username",
             formData = formData {
                 append("file", byteArray, Headers.build {
                     append(HttpHeaders.ContentType, "image/png")
@@ -232,7 +167,5 @@ class APIClient @Inject constructor() {
             }
         ) { method = HttpMethod.Put }
     }
-
-
 
 }

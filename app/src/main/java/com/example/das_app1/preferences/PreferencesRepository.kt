@@ -49,8 +49,8 @@ interface IPreferencesRepository {
     fun userTheme(user: String): Flow<Int>
     suspend fun setUserTheme(user: String, theme: Int)
 
-    suspend fun userProfileImage(): Bitmap
-    suspend fun setUserProfileImage(image: Bitmap): Bitmap
+    suspend fun userProfileImage(username: String): Bitmap
+    suspend fun setUserProfileImage(image: Bitmap, username: String): Bitmap
 }
 
 /**
@@ -177,10 +177,10 @@ class PreferencesRepository @Inject constructor(
     }
 
     private lateinit var profileImage: Bitmap
-    override suspend fun userProfileImage(): Bitmap {
+    override suspend fun userProfileImage(username: String): Bitmap {
         if (!this::profileImage.isInitialized) {
             try {
-                profileImage = apiClient.getUserProfile()
+                profileImage = apiClient.getUserProfile(username)
             } catch (e: ResponseException) {
                 Log.e("HTTP", "Couldn't get profile image.")
                 e.printStackTrace()
@@ -189,9 +189,9 @@ class PreferencesRepository @Inject constructor(
         return profileImage
     }
 
-    override suspend fun setUserProfileImage(image: Bitmap): Bitmap {
+    override suspend fun setUserProfileImage(image: Bitmap, username: String): Bitmap {
         try {
-            apiClient.uploadUserProfile(image)
+            apiClient.uploadUserProfile(image, username)
             profileImage = image
         } catch (e: ResponseException) {
             Log.e("HTTP", "Couldn't upload profile image.")

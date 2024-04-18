@@ -46,6 +46,7 @@ import kotlinx.coroutines.launch
 import com.example.das_app1.activities.identification.IdentificationViewModel
 import com.example.das_app1.activities.identification.composables.LogIn
 import com.example.das_app1.activities.identification.composables.SignIn
+import java.io.IOException
 
 /*************************************************************************
  ****                      IdentificationScreen                       ****
@@ -132,7 +133,7 @@ fun IdentificationScreen(
                     onCorrectLogin(user)
                 } else showLoginErrorDialog = !identificationViewModel.isLoginCorrect
             }
-            catch (e: Exception) {
+            catch (e: IOException) {
                 Log.d("SERVER ERROR",e.toString())
                 showServerErrorAlert=true
             }
@@ -141,10 +142,7 @@ fun IdentificationScreen(
 
     }
 
-
-
-
-        val onSignIn: () -> Unit = {
+    val onSignIn: () -> Unit = {
         coroutineScope.launch(Dispatchers.IO) {
             try{
                 val username = identificationViewModel.checkSignIn()

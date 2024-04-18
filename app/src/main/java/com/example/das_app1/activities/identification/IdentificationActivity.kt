@@ -127,9 +127,8 @@ class IdentificationActivity : FragmentActivity() {
         } catch (e: SecurityException) {
             e.printStackTrace()
         }
-        identificationViewModel.loginUsername=identificationViewModel.signInUsername
-        identificationViewModel.loginPassword=identificationViewModel.signInPassword
-        identificationViewModel.isLogin=true
+
+        onCorrectLogin(username)
     }
 
     /**
