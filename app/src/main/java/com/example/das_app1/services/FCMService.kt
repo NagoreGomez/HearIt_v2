@@ -11,7 +11,9 @@ import com.example.das_app1.R
 
 
 class FCMService : FirebaseMessagingService() {
-    override fun onNewToken(token: String) {}
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+    }
 
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -20,7 +22,6 @@ class FCMService : FirebaseMessagingService() {
             Log.d("FCM", "Message Notification Title: ${notification.title}")
             Log.d("FCM", "Message Notification Body: ${notification.body}")
 
-            // Show user created notification
             val builder = NotificationCompat.Builder(this, MyNotificationChannels.CORPORATION_CHANNEL.name)
                 .setSmallIcon(R.drawable.noti)
                 .setContentTitle(notification.title)
