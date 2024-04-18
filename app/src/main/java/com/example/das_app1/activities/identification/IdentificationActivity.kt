@@ -153,13 +153,10 @@ class IdentificationActivity : FragmentActivity() {
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun subscribeUser() {
-        // Get FCM
         val fcm = FirebaseMessaging.getInstance()
         Log.d("FCM", "DCM obtained")
 
-        // Delete previous token
         fcm.deleteToken().addOnSuccessListener {
-            // Get a new token and subscribe the user
             Log.d("FCM", "Token deleted")
             fcm.token.addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
