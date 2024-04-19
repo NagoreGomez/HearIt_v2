@@ -3,10 +3,22 @@ package com.example.das_app1.widgets
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
@@ -83,15 +95,9 @@ class Widget : GlanceAppWidget() {
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(color = md_theme_light_background)
+                .background(Color(0xFFFFE9E5))
                 .padding(16.dp)
         ) {
-            Text(
-                text = if (user != null) context.getString(R.string.your_playlist, user) else " ",
-                modifier = GlanceModifier.fillMaxWidth().padding(bottom = 16.dp),
-                maxLines = 1,
-                style = TextStyle(fontWeight = FontWeight.Medium, fontSize = 17.sp, textAlign = TextAlign.Center),
-            )
 
             when {
                 user == null -> {
@@ -115,44 +121,66 @@ class Widget : GlanceAppWidget() {
                 else -> {
                     LazyColumn(modifier = GlanceModifier.fillMaxSize().defaultWeight()) {
                         items(playlistList, itemId = { it.hashCode().toLong() }) { item ->
+
                             Column(
                                 horizontalAlignment = Alignment.Start,
-                                modifier = GlanceModifier.fillMaxWidth().padding(vertical = 8.dp)
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = GlanceModifier.fillMaxWidth().padding(vertical = 8.dp),
                             ) {
-                                Text(
-                                    text = item.name,
-                                    style = TextStyle(fontWeight = FontWeight.Medium, fontSize = 16.sp),
-                                    modifier = GlanceModifier.padding(bottom = 4.dp)
-                                )
+                                Row(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = GlanceModifier.fillMaxWidth().background(Color(0xFFFDBAAE))
+                                ){
+                                    Text(
+                                        text = item.name,
+                                        style = TextStyle(fontWeight = FontWeight.Medium, fontSize = 16.sp),
+                                        modifier = GlanceModifier.padding(bottom = 4.dp)
+                                    )
+
+                                }
 
                                 val playlistSongs = getSongs(item.id, playlistsSongsList, songsList)
 
-                                playlistSongs.forEach { song ->
+                                if (playlistSongs.isEmpty()){
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        modifier = GlanceModifier.fillMaxWidth().padding(vertical = 4.dp).clickable{
-                                            Log.d("URL SONG", song.url)
-                                            val url = song.url.trim()
-                                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK // Añade la bandera aquí
-                                            context.startActivity(intent)
-
-                                        }
+                                        modifier = GlanceModifier.fillMaxWidth().padding(vertical = 12.dp).background(Color(0xFFFFD3CB))
                                     ) {
                                         Text(
-                                            text = song.name,
-                                            style = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp, textAlign = TextAlign.Left),
+                                            text = "Añade una canción!",
+                                            style = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp, textAlign = TextAlign.Center),
                                             modifier = GlanceModifier.defaultWeight()
                                         )
 
                                     }
                                 }
+                                else{
+                                    playlistSongs.forEach { song ->
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = GlanceModifier.fillMaxWidth().padding(vertical = 12.dp).background(Color(
+                                                0xFFFFD3CB
+                                            )
+                                            ).clickable{
+                                                val url = song.url.trim()
+                                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                                context.startActivity(intent)
 
-                                Text(
-                                    text = context.getString(R.string.songs, item.songCount),
-                                    style = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp, textAlign = TextAlign.Center),
-                                    modifier = GlanceModifier.padding(top = 4.dp)
-                                )
+                                            }
+                                        ) {
+                                            Text(
+                                                text = "   ${song.name}",
+                                                style = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp, textAlign = TextAlign.Left),
+                                                modifier = GlanceModifier.defaultWeight()
+                                            )
+
+                                        }
+                                    }
+                                }
+
+
                             }
                         }
                     }
