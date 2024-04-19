@@ -14,8 +14,6 @@ import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.example.das_app1.model.entities.CompactPlaylist
 import com.example.das_app1.model.entities.CompactPlaylistSongs
 import com.example.das_app1.model.entities.CompactSong
-import com.example.das_app1.model.entities.PlaylistSongs
-import com.example.das_app1.model.entities.Song
 import com.example.das_app1.model.repositories.PlaylistRepository
 import com.example.das_app1.preferences.ILastLoggedUser
 import dagger.hilt.android.AndroidEntryPoint

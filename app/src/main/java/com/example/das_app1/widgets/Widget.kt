@@ -3,21 +3,8 @@ package com.example.das_app1.widgets
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Icon
 import android.net.Uri
-import android.util.Log
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +34,6 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
-import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
@@ -59,8 +45,6 @@ import kotlinx.serialization.json.Json
 import com.example.das_app1.R
 import com.example.das_app1.model.entities.CompactPlaylistSongs
 import com.example.das_app1.model.entities.CompactSong
-import com.example.das_app1.model.entities.Song
-import com.example.das_app1.ui.theme.md_theme_light_background
 import com.example.das_app1.widgets.WidgetReceiver.Companion.playlists
 import com.example.das_app1.widgets.WidgetReceiver.Companion.songs
 
