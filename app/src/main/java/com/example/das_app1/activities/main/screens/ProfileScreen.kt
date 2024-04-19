@@ -45,25 +45,29 @@ fun ProfileScreen(
     val profilePicture: Bitmap? = preferencesViewModel.profilePicture
 
 
-    val toastMsg = stringResource(R.string.no_photo_has_been_taken)
+    val toast = stringResource(R.string.no_photo_has_been_taken)
 
+    // Si se ha tomado una foto establecerla, sino mostrar un Toast
     val imagePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { pictureTaken ->
         if (pictureTaken) preferencesViewModel.setProfileImage()
-        else Toast.makeText(context, toastMsg, Toast.LENGTH_LONG).show()
+        else Toast.makeText(context, toast, Toast.LENGTH_LONG).show()
     }
 
+    // ***************** EVENTOS *****************
+
     fun onEditImageRequest() {
+        // Crear el directorio para la imagen y crear la ruta temporal
         val profileImageDir = File(context.cacheDir, "images/profile/")
         Files.createDirectories(profileImageDir.toPath())
 
         val newProfileImagePath = File.createTempFile(preferencesViewModel.username, ".png", profileImageDir)
+        // Obtener la URI de la imagen
         val contentUri: Uri = FileProvider.getUriForFile(
             context,
             "com.example.das_app1.fileprovider",
             newProfileImagePath
         )
         preferencesViewModel.profilePicturePath = newProfileImagePath.path
-
         imagePickerLauncher.launch(contentUri)
     }
 

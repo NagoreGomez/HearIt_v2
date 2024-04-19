@@ -33,6 +33,15 @@ data class PlaylistSongs(
     val playlistId: String
 )
 
+/**
+ * Data class que representa una versión compacta de una PlaylistSong.
+ *
+ * Esta clase se utiliza para representar una versión más compacta de la entidad
+ * y facilitar la serialización/deserialización, usada para los widgets.
+ *
+ * @property songId El identificador único de la canción.
+ * @property playlistId El identificador único de la lista.
+ */
 @Serializable
 data class CompactPlaylistSongs(
     val songId: String,

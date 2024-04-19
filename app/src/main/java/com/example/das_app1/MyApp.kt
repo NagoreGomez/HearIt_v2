@@ -10,36 +10,16 @@ class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val authChannelName = getString(R.string.auth_channel)
-        val authChannelDescription = getString(R.string.notification_channel)
-
-        val authChannel = NotificationChannel(MyNotificationChannels.AUTH_CHANNEL.name, authChannelName, NotificationManager.IMPORTANCE_LOW)
-        authChannel.description = authChannelDescription
-
-        // Create the Corporation Notification Channel
-        val corporationChannelName = getString(R.string.corp_channel)
-        val corporationChannelDescription = getString(R.string.corp_notification_channel)
-
-        val corporationChannel =
-            NotificationChannel(MyNotificationChannels.CORPORATION_CHANNEL.name, corporationChannelName, NotificationManager.IMPORTANCE_HIGH)
-        corporationChannel.description = corporationChannelDescription
-
-        // Get notification manager
+        // Canal para la notificaciones
+        val registerChannel = NotificationChannel(MyNotificationChannels.NOTIFICATIONS_CHANNEL.name, getString(R.string.notifications_channel), NotificationManager.IMPORTANCE_LOW)
+        registerChannel.description = getString(R.string.notification_channel_desc)
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        // Register the channels with the system
-        notificationManager.createNotificationChannel(authChannel)
-        notificationManager.createNotificationChannel(corporationChannel)
-
+        notificationManager.createNotificationChannel(registerChannel)
     }
 }
-
 enum class MyNotificationChannels {
-    AUTH_CHANNEL,
-    CORPORATION_CHANNEL,
+    NOTIFICATIONS_CHANNEL
 }
-
 enum class NotificationID(val id: Int) {
-    USER_CREATED(0),
-    CORPORATION_NOTIFICATION(1),
+    NOTIFICATIONS(0)
 }

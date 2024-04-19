@@ -46,6 +46,23 @@ import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
 
+/*************************************************************************
+ ****                          ConcertCalendar                         ****
+ *************************************************************************/
+
+/**
+ * ConcertCalendar es el componible encargado de mostrar la interfaz para mostrar
+ * la fecha del próximo concierto y programar una alarma y recordatorio.
+ *
+ * @param mainViewModel [MainViewModel] contiene los estados y llamadas necesarias.
+ * @param isVertical define si la orientación es vertical u horizontal.
+ * @param concertDate define la fecha del concierto.
+ * @param concertDateMillis define la fecha del concierto en milisegundos.
+ * @param concertAlarmMillis define la fecha de la alarma del concierto en milisegundos.
+ * @param concertLocationAddress define la dirección del concierto.
+ */
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConcertCalendar(
@@ -59,14 +76,12 @@ fun ConcertCalendar(
 
 
     val context = LocalContext.current
-
     // EStablecer por defecto la fecha de la alarma un dia antes
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = concertAlarmMillis)
 
-
     val scheduler= AlarmScheduler(context = context)
 
-
+    // ***************** DIALOGOS *****************
     var showAlert by rememberSaveable { mutableStateOf(false) }
     if (showAlert){
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -165,6 +180,7 @@ fun ConcertCalendar(
             verticalArrangement = Arrangement.Top
         ){
             Spacer(modifier = Modifier.height(5.dp))
+            // ******************* FECHA DEL CONCIERTO *******************
             Text(
                 text = stringResource(R.string.fecha_del_siguiente_concierto),
                 style = TextStyle(
@@ -182,6 +198,7 @@ fun ConcertCalendar(
                 )
             )
             Spacer(modifier = Modifier.height(10.dp))
+            // ******************* CALENDARIO *******************
             DatePicker(
                 state = datePickerState,
                 modifier = Modifier
@@ -190,6 +207,8 @@ fun ConcertCalendar(
 
             Spacer(modifier = Modifier.height(4.dp))
 
+
+            // ******************* BOTÓN PARA PROGRAMAR ALARMA Y RECORDATORIO *******************
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -199,10 +218,9 @@ fun ConcertCalendar(
             ) {
                 Button(
                     onClick = {
-
+                        // Si hay una fecha seleccionada
                         if (datePickerState.selectedDateMillis != null && mainViewModel.songSinger != "") {
                             showAlert=true
-
                         }
                         else{
                             Toast.makeText(context,

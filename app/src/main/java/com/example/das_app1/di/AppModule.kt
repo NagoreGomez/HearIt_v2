@@ -64,8 +64,8 @@ object AppModule {
     /**
      * Proporciona el repositorio de identificación.
      *
-     * @param authenticationClient cliente HTTP para identificación.
      * @param lastLoggedUser Último usuario conectado.
+     * @param apiClient cliente HTTP para peticiones a la API.
      * @return Repositorio de inicio de sesión.
      */
     @Singleton
@@ -76,7 +76,7 @@ object AppModule {
      * Proporciona el repositorio de listas.
      *
      * @param playlistDao DAO de listas.
-     * @param apiClient cliente HTTP para peticiones identificadas.
+     * @param apiClient cliente HTTP para peticiones a la API.
      * @return Repositorio de listas.
      */
     @Singleton
@@ -87,7 +87,7 @@ object AppModule {
      * Proporciona la implementación de `ILastLoggedUser`.
      *
      * @param app Contexto de la aplicación.
-     * @param apiClient cliente HTTP para peticiones identificadas.
+     * @param apiClient cliente HTTP para peticiones a la API.
      * @return Implementación de `ILastLoggedUser`.
      */
     @Singleton
@@ -98,7 +98,7 @@ object AppModule {
      * Proporciona el repositorio de preferencias de la aplicación.
      *
      * @param app Contexto de la aplicación.
-     * @param apiClient cliente HTTP para peticiones identificadas.
+     * @param apiClient cliente HTTP para peticiones a la API.
      * @return Repositorio de preferencias.
      */
     @Singleton

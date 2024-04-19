@@ -99,7 +99,11 @@ class PlaylistRepository @Inject constructor(
         return playlistDao.getUserPlaylists()
     }
 
-
+    /**
+     * Elimina una playlist.
+     *@param id Identificador de la playlist que se debe eliminar.
+     * @return True si se ha eliminado, false sino.
+     */
     override suspend fun removePlaylist(id: String): Boolean {
         return try {
             val playlistId = PlaylistId(id)
@@ -129,9 +133,6 @@ class PlaylistRepository @Inject constructor(
     override fun getUserPlaylistSongs(playlistId: String): Flow<List<Song>>{
         return playlistDao.getUserPlaylistSong(playlistId)
     }
-
-
-
 
     /**
      * Añade una canción a una lista.
@@ -167,20 +168,31 @@ class PlaylistRepository @Inject constructor(
         }
     }
 
-
-
-
+    /**
+     * Descarga las listas del usuario desde el servidor remoto y las guarda en la base de datos local.
+     *
+     * @param username El nombre de usuario del usuario identificado.
+     */
     override suspend fun downloadPlaylistsFromRemote(username: String){
         playlistDao.deletePlaylists()
         val playlistsList = apiClient.getUserPlaylists(username)
         playlistsList.map {playlistDao.addPlaylist(remotePlaylistToPlaylist(it))}
     }
 
+    /**
+     * Descarga todas las canciones desde el servidor remoto y las guarda en la base de datos local.
+     */
     override suspend fun downloadSongsFromRemote(){
         val songsList = apiClient.getSongs()
         songsList.map {playlistDao.addSong(remoteSongToSong(it))}
     }
 
+    /**
+     * Descarga las canciones de las listas del usuario desde el servidor remoto
+     * y las guarda en la base de datos local.
+     *
+     * @param username El nombre de usuario del usuario identificado.
+     */
     override suspend fun downloadPlaylistsSongsFromRemote(username: String){
         playlistDao.deletePlaylistsSongs()
         val playlistsSongsList = apiClient.getUserPlaylistSongs(username)
@@ -188,10 +200,21 @@ class PlaylistRepository @Inject constructor(
     }
 
 
+    /**
+     * Obtiene todas las listas.
+     *
+     * @return Un [Flow] que emite una lista de listas.
+     */
     override fun getAllPlaylists(): Flow<List<Playlist>>{
         return playlistDao.getAllPlaylists()
     }
 
+
+    /**
+     * Obtiene todas las canciones de todas las listas.
+     *
+     * @return Un [Flow] que emite una lista de canciones de listas.
+     */
     override fun getAllPlaylistsSongs(): Flow<List<PlaylistSongs>>{
         return playlistDao.getAllPlaylistsSongs()
     }

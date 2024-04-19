@@ -128,8 +128,10 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
     }
 
 
-
+    // Variable para guardar que se ha terminado de descargar los datos del servidor
     var downloadFinish by mutableStateOf(false)
+
+    // Funcion para descargar los datos de la base de datos del servidor
     fun downloadData() {
         CoroutineScope(Dispatchers.IO).launch {
             try{
@@ -143,14 +145,17 @@ class MainViewModel @Inject constructor(private val playlistRepository: IPlaylis
         }
     }
 
+    // Descargar las playlists de la base de datos remota
     private suspend fun downloadPlaylistsFromRemote() {
         playlistRepository.downloadPlaylistsFromRemote(username)
     }
 
+    // Descargar las canciones de la base de datos remota
     private suspend fun downloadSongsFromRemote() {
         playlistRepository.downloadSongsFromRemote()
     }
 
+    // Descargar las canciones de las  playlists de la base de datos remota
     private suspend fun downloadPlaylistsSongsFromRemote() {
         playlistRepository.downloadPlaylistsSongsFromRemote(username)
     }

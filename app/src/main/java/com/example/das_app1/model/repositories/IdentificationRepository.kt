@@ -17,7 +17,7 @@ import javax.inject.Singleton
  */
 
 interface IIdentificationRepository: ILastLoggedUser{
-    suspend fun authenticateUser(remoteUser: RemoteUser): Boolean
+    suspend fun identificateUser(remoteUser: RemoteUser): Boolean
     suspend fun createUser(remoteUser: RemoteUser): Boolean
 }
 
@@ -55,10 +55,15 @@ class IdentificationRepository @Inject constructor(
     override suspend fun setLastLoggedUser(username: String) = lastLoggedUser.setLastLoggedUser(username)
 
 
-
-    override suspend fun authenticateUser(remoteUser: RemoteUser): Boolean {
+    /**
+     * Establece si el usuario se ha identificado correctamente.
+     *
+     * @param remoteUser Usuario de la base de datos.
+     * @return true si ha ido bien, false sino, y la Exception si ha sido del servidor.
+     */
+    override suspend fun identificateUser(remoteUser: RemoteUser): Boolean {
         return try {
-            apiClient.authenticate(remoteUser)
+            apiClient.identificate(remoteUser)
             true
         } catch (e:IOException){
             throw IOException("Sever error", e)
@@ -68,7 +73,12 @@ class IdentificationRepository @Inject constructor(
         }
     }
 
-
+    /**
+     * Establece si el usuario se ha creado correctamente.
+     *
+     * @param remoteUser Usuario de la base de datos.
+     * @return true si ha ido bien, false sino, y la Exception si ha sido del servidor.
+     */
     override suspend fun createUser(remoteUser: RemoteUser): Boolean {
         return try {
             apiClient.createUser(remoteUser)

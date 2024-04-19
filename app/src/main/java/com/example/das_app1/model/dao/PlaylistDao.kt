@@ -26,9 +26,6 @@ interface PlaylistDao {
     @Insert
     suspend fun createPlaylist(playlist: Playlist)
 
-
-
-
     /**
      * Edita el nombre de una lista.
      *
@@ -41,10 +38,9 @@ interface PlaylistDao {
     fun editPlaylist(playlistId: String,playlistName: String):Int
 
     /**
-     * Obtiene las listas del usuario ordenadas alfabéticamente por nombre.
+     * Obtiene las listas ordenadas alfabéticamente por nombre.
      *
-     * @param user El nombre de usuario del usuario actual.
-     * @return Un [Flow] que emite la lista de listas del usuario.
+     * @return Un [Flow] que emite la lista de listas.
      */
     @Transaction
     @Query("SELECT * FROM PlayList ORDER BY name ASC")
@@ -78,8 +74,6 @@ interface PlaylistDao {
             "AND PlaylistSongs.playlistId=:playListId ORDER BY Song.name ASC")
     fun getUserPlaylistSong(playListId: String): Flow<List<Song>>
 
-
-
     /**
      * Añade una canción a una lista.
      *
@@ -100,36 +94,61 @@ interface PlaylistDao {
     @Query("DELETE FROM PlaylistSongs WHERE songId=:songId AND playlistId=:playlistId")
     suspend fun removeSongFromPlaylist(songId: String,playlistId: String)
 
-
-
+    /**
+     * Inserta una nueva playlist en la base de datos.
+     *
+     * @param playlist La playlist a añadir.
+     */
     @Transaction
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addPlaylist(playlist: Playlist)
 
-
+    /**
+     * Inserta una nueva canción en la base de datos.
+     *
+     * @param song La canción a añadir.
+     */
     @Transaction
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addSong(song: Song)
 
+    /**
+     * Inserta una nueva canción en una playlist.
+     *
+     * @param playlistSongs la canción y la playlist.
+     */
     @Transaction
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addPlaylistSong(playlistSongs: PlaylistSongs)
 
-
+    /**
+     * Obtiene todas las playlits de la base de datos.
+     *
+     * @return Un [Flow] que emite la lista de playlists.
+     */
     @Transaction
     @Query("SELECT * FROM PlayList")
     fun getAllPlaylists(): Flow<List<Playlist>>
 
-
+    /**
+     * Obtiene todas las canciones de la base de datos.
+     *
+     * @return Un [Flow] que emite la lista de canciones.
+     */
     @Transaction
     @Query("SELECT * FROM PlaylistSongs")
     fun getAllPlaylistsSongs(): Flow<List<PlaylistSongs>>
 
+    /**
+     * Elimina todas las playlists de la base de datos.
+     */
     @Transaction
     @Query("DELETE FROM Playlist ")
     suspend fun deletePlaylists()
 
-
+    /**
+     * Elimina todas las canciones de todas las playlists de la base de datos.
+     */
     @Transaction
     @Query("DELETE FROM PlaylistSongs")
     suspend fun deletePlaylistsSongs()

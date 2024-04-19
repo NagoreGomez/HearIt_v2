@@ -64,10 +64,13 @@ import com.example.das_app1.ui.theme.md_theme_light_background
 import com.example.das_app1.widgets.WidgetReceiver.Companion.playlists
 import com.example.das_app1.widgets.WidgetReceiver.Companion.songs
 
-
-
+/**
+ * Clase para definir el widget personalizado, extiende de GlanceAppWidget.
+ */
 
 class Widget : GlanceAppWidget() {
+
+    // Metodo para actualizar el contenido del widget
     override suspend fun provideGlance(context: Context, id: GlanceId) {
 
         provideContent {
@@ -81,6 +84,7 @@ class Widget : GlanceAppWidget() {
         val prefs = currentState<Preferences>()
         val context = LocalContext.current
 
+        // Obtener los datos para el widget
         val user = prefs[currentUserKey]
         val playlists: String? = prefs[playlists]
         val playlistList: List<CompactPlaylist> = if (playlists != null) Json.decodeFromString(playlists) else emptyList()
@@ -98,8 +102,8 @@ class Widget : GlanceAppWidget() {
                 .background(Color(0xFFFFE9E5))
                 .padding(16.dp)
         ) {
-
             when {
+                // User no identificado
                 user == null -> {
                     Column(
                         verticalAlignment = Alignment.CenterVertically,
@@ -109,6 +113,7 @@ class Widget : GlanceAppWidget() {
                         Text(text = context.getString(R.string.login_please))
                     }
                 }
+                // No hay listas
                 playlistList.isEmpty() -> {
                     Column(
                         verticalAlignment = Alignment.CenterVertically,
@@ -119,9 +124,9 @@ class Widget : GlanceAppWidget() {
                     }
                 }
                 else -> {
+                    // Mostrar listas
                     LazyColumn(modifier = GlanceModifier.fillMaxSize().defaultWeight()) {
                         items(playlistList, itemId = { it.hashCode().toLong() }) { item ->
-
                             Column(
                                 horizontalAlignment = Alignment.Start,
                                 verticalAlignment = Alignment.CenterVertically,
@@ -132,6 +137,7 @@ class Widget : GlanceAppWidget() {
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = GlanceModifier.fillMaxWidth().background(Color(0xFFFDBAAE))
                                 ){
+                                    // Nombre de la lista
                                     Text(
                                         text = item.name,
                                         style = TextStyle(fontWeight = FontWeight.Medium, fontSize = 16.sp),
@@ -139,9 +145,10 @@ class Widget : GlanceAppWidget() {
                                     )
 
                                 }
-
+                                // Obtener las canciones de cada lista
                                 val playlistSongs = getSongs(item.id, playlistsSongsList, songsList)
 
+                                // Mostrar un mensaje si la lista no tiene canciones
                                 if (playlistSongs.isEmpty()){
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
@@ -157,6 +164,7 @@ class Widget : GlanceAppWidget() {
                                 }
                                 else{
                                     playlistSongs.forEach { song ->
+                                        // Mostrar el nombre de la cancion, y al clickar abrirla en Youtube
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
                                             modifier = GlanceModifier.fillMaxWidth().padding(vertical = 12.dp).background(Color(
@@ -179,8 +187,6 @@ class Widget : GlanceAppWidget() {
                                         }
                                     }
                                 }
-
-
                             }
                         }
                     }
@@ -188,6 +194,7 @@ class Widget : GlanceAppWidget() {
             }
             Spacer(GlanceModifier.height(8.dp))
 
+            // Botón para actualizar el widget
             Image(
                 provider = ImageProvider(R.drawable.reload),
                 contentDescription = "Refresh",
@@ -197,12 +204,14 @@ class Widget : GlanceAppWidget() {
     }
 
 
+    // Función para obtener los nombres y urls de las canciones de una lista, con el identificador de la lista
     private fun getSongs(playlistID: String, playlistSongs: List<CompactPlaylistSongs>, songs: List<CompactSong>): List<CompactSong>{
         val songIdsInPlaylist = playlistSongs.filter { it.playlistId == playlistID }.map { it.songId }
         return songs.filter { it.id in songIdsInPlaylist }
     }
 
 
+    // Clase para manejar la actualizacion del widget cuando el usuario pulsa el botón
      class RefreshAction : ActionCallback {
         override suspend fun onAction(
             context: Context,

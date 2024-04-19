@@ -10,7 +10,7 @@ import com.example.das_app1.activities.main.composables.ConcertLocation
  *************************************************************************/
 
 /**
- * ConcertLocationScreen es la pantalla para mostrar la ubicacion del concierto.
+ * ConcertLocationScreen es la pantalla para mostrar la ubicación del concierto.
  *
  * @param mainViewModel [MainViewModel] contiene los estados y llamadas necesarias.
  */
@@ -19,11 +19,14 @@ import com.example.das_app1.activities.main.composables.ConcertLocation
 fun ConcertLocationScreen(
     mainViewModel: MainViewModel
 ) {
-
+    // Dirección del concierto
     val concertLocationAddress = mainViewModel.singerConcertLocation
+
+    // Actualizar título
     mainViewModel.title= mainViewModel.songSinger
     val isVertical = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
+    // ***************** PANTALLA PARA MOSTRAR LA UBICACIÓN DEL CONCIERTO *****************
     ConcertLocation(
         mainViewModel=mainViewModel,
         isVertical=isVertical,

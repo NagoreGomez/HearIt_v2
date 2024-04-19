@@ -176,7 +176,15 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    // Alamacena la imagen de perfil
     private lateinit var profileImage: Bitmap
+
+    /**
+     * Obtiene la imagen de perfil del usuario desde el servidor remoto.
+     *
+     * @param username El nombre de usuario del usuario.
+     * @return Un [Bitmap] que representa la imagen de perfil del usuario.
+     */
     override suspend fun userProfileImage(username: String): Bitmap {
         if (!this::profileImage.isInitialized) {
             try {
@@ -189,6 +197,13 @@ class PreferencesRepository @Inject constructor(
         return profileImage
     }
 
+    /**
+     * Sube la nueva imagen de perfil del usuario al servidor remoto.
+     *
+     * @param image La nueva imagen de perfil del usuario.
+     * @param username El nombre de usuario del usuario.
+     * @return Un [Bitmap] que representa la nueva imagen de perfil del usuario.
+     */
     override suspend fun setUserProfileImage(image: Bitmap, username: String): Bitmap {
         try {
             apiClient.uploadUserProfile(image, username)

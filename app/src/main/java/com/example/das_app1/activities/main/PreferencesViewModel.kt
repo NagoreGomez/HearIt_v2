@@ -100,6 +100,7 @@ class PreferencesViewModel @Inject constructor(
 
     var profilePicturePath: String? = null
 
+    // Obtener la imagen del usuario al iniciar el ViewModel
     init {
         viewModelScope.launch(Dispatchers.IO) {
             delay(100)
@@ -107,6 +108,15 @@ class PreferencesViewModel @Inject constructor(
         }
     }
 
+    // Cargar y establecer la imagen de perfil del usuario desde la ruta de la imagen
+    fun setProfileImage() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val image = BitmapFactory.decodeFile(profilePicturePath!!)
+            setProfileImage(image)
+        }
+    }
+
+    // Establecer la nueva imagen de perfil
     private fun setProfileImage(image: Bitmap) {
         viewModelScope.launch(Dispatchers.IO) {
             profilePicture = null
@@ -114,12 +124,7 @@ class PreferencesViewModel @Inject constructor(
         }
     }
 
-    fun setProfileImage() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val image = BitmapFactory.decodeFile(profilePicturePath!!)
-            setProfileImage(image)
-        }
-    }
+
 
 }
 

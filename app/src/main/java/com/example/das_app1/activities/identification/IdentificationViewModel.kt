@@ -70,7 +70,7 @@ class IdentificationViewModel @Inject constructor(private val identificationRepo
 
 
     private suspend fun checkUserLogin(remoteUser: RemoteUser): Boolean {
-        return identificationRepository.authenticateUser(remoteUser)
+        return identificationRepository.identificateUser(remoteUser)
 
     }
 

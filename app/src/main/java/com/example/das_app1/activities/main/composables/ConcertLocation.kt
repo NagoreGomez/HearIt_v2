@@ -46,6 +46,18 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 
+/*************************************************************************
+ ****                          ConcertLocation                         ****
+ *************************************************************************/
+
+/**
+ * ConcertLocation es el componible encargado de mostrar la interfaz para mostrar
+ * la ubicación del próximo concierto.
+ *
+ * @param mainViewModel [MainViewModel] contiene los estados y llamadas necesarias.
+ * @param isVertical define si la orientación es vertical u horizontal.
+ * @param concertLocationAddress define la dirección del concierto.
+ */
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -86,6 +98,7 @@ fun ConcertLocation(
             }
         }
         Spacer(modifier = Modifier.height(5.dp))
+        // ******************* LOCALIZACIÓN DEL CONCIERTO *******************
         Text(
             text = stringResource(R.string.localizaci_n_del_siguiente_concierto),
             style = TextStyle(
@@ -100,10 +113,11 @@ fun ConcertLocation(
         )
 
 
-        // Obtener la geolocalizacion del usuario y calcular la distancia hasta el concierto
+        // Obtener la geolocalizacion del usuario y calcular la distancia hasta la unicación concierto
         val locationState = remember { mutableStateOf<Location?>(null) }
 
         DisposableEffect(Unit) {
+            // Permiso de localización
             if (locationPermissionState.status.isGranted) {
                 val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
                 if (ActivityCompat.checkSelfPermission(context,
@@ -121,19 +135,20 @@ fun ConcertLocation(
                 }
 
             } else {
-                // Manejar el caso donde el permiso no está concedido
                 Log.e("ConcertLocation", "Permiso de ubicación denegado")
             }
 
             onDispose {
             }
         }
+
+        // ******************* DISTANCIA AL CONCIERTO *******************
         locationState.value?.let { currentLocation ->
             getLatLngFromAddress(LocalContext.current, concertLocationAddress)?.let { (latitude, longitude) ->
                 val distance = currentLocation.distanceTo(Location("Concert").apply {
                     this.latitude = latitude
                     this.longitude = longitude
-                }) / 1000 // Convertir distancia a kilómetros
+                }) / 1000 // Distancia en kilómetros
 
                 Text(
                     text = stringResource(R.string.se_encuentra_a_km, distance.toInt()),
@@ -147,15 +162,13 @@ fun ConcertLocation(
         }
 
 
-
-
         LaunchedEffect(true) {
             if (!locationPermissionState.status.isGranted) {
                 locationPermissionState.launchPermissionRequest()
             }
         }
 
-        // Mostrar mapa con marcador del concierto
+        // ******************* MAPA CON MARCADOR DEL CONCIERTO *******************
         if (locationPermissionState.status.isGranted) {
             getLatLngFromAddress(LocalContext.current, concertLocationAddress)?.let { (latitude, longitude) ->
 

@@ -26,6 +26,12 @@ import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 
+/**
+ * Clase para recibir y gestionar el widget y los datos que muestra.
+ *
+ * Referencias: https://developer.android.com/develop/ui/compose/glance/create-app-widget?hl=es-419
+ */
+
 @AndroidEntryPoint
 class WidgetReceiver: GlanceAppWidgetReceiver() {
 
@@ -40,53 +46,45 @@ class WidgetReceiver: GlanceAppWidgetReceiver() {
     lateinit var lastLoggedUser: ILastLoggedUser
 
 
+    // Función para cuando se actualiza el widget
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-
-        Log.d("Widget", "onUpdate Called")
         observeData(context)
     }
 
+    // Función para cuando se recibe una acción del widget
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        Log.d("Widget", "onReceive Called; Action: ${intent.action}")
-
         if (intent.action == UPDATE_ACTION || intent.action.equals("ACTION_TRIGGER_LAMBDA")) {
             observeData(context)
         }
     }
 
+    // Función para gestioanr los datos del widget
     private fun observeData(context: Context) {
         coroutineScope.launch {
-            Log.d("Widget", "Coroutine Called")
-
-
             val currentUsername = lastLoggedUser.getLastLoggedUser()
 
+            // Obtener las playlists
             val playlistsData = if (currentUsername != null) {
                 playlistRepository.getUserPlaylists().first().map(::CompactPlaylist)
             } else emptyList()
 
-
+            // Obtener las canciones de las playlists
             val playlistSongsData = if (currentUsername != null) {
                 playlistRepository.getAllPlaylistsSongs().first().map(::CompactPlaylistSongs)
             } else emptyList()
 
+            // Obtener las canciones
             val songsData = if (currentUsername != null) {
                 playlistRepository.getSongs().first().map(::CompactSong)
             } else emptyList()
 
+            Log.d("Playlists",playlists.toString())
+            Log.d("PlaylistsSongs",playlistSongsData.toString())
+            Log.d("Songs",songsData.toString())
 
-            Log.d("PLAYLIST",playlists.toString())
-            Log.d("PLAYLISTSONGS",playlistSongsData.toString())
-            Log.d("SONGS",songsData.toString())
-
-
-
-            Log.d("Widget", "Coroutine - Data-Length: ${playlistsData.size}")
-            Log.d("Widget", "Coroutine - Data-Length: ${playlistSongsData.size}")
-            Log.d("Widget", "Coroutine - Data-Length: ${songsData.size}")
-
+            // Actualizar el widget con los nuevos datos
             GlanceAppWidgetManager(context).getGlanceIds(Widget::class.java).forEach { glanceId ->
                 updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { widgetDataStore ->
                     widgetDataStore.toMutablePreferences().apply {
@@ -97,18 +95,19 @@ class WidgetReceiver: GlanceAppWidgetReceiver() {
                             this[playlists] = json.encodeToString(playlistsData)
                             this[playlistsSongs] = json.encodeToString(playlistSongsData)
                             this[songs] = json.encodeToString(songsData)
-
                         }
                         else this.clear()
                     }
                 }
             }
+            // Fuerza a que se actualicen todos los widgets
             glanceAppWidget.updateAll(context)
         }
     }
 
     companion object {
         const val UPDATE_ACTION = "updateAction"
+        // Claves para guardar la informacíon necesaria para el widget
         val currentUserKey = stringPreferencesKey("currentUser")
         val playlists = stringPreferencesKey("playlists")
         val playlistsSongs = stringPreferencesKey("playlistsSongs")

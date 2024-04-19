@@ -331,6 +331,7 @@ private fun MainActivityScreen(
                     )
                 }
             }
+            // FAB para mostrar el mapa con la ubicación del concierto
             if (showAlarmFAB){
                 FloatingActionButton(
                     onClick = {
@@ -408,7 +409,7 @@ private fun MainActivityScreen(
             }
 
             composable(route = Screens.ConcertCalendarScreen.route){
-                // Se mostrará unicamente el boton del perfil (en orientación horizontal)
+                // Se mostrará el boton del perfil y el FAB de localización del concierto (en orientación horizontal)
                 showAddFAB=false
                 showAlarmFAB=true
                 playlistScreenFAB=false

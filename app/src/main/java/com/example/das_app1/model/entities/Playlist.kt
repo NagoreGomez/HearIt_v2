@@ -39,18 +39,23 @@ data class Playlist(
 )
 
 
+/**
+ * Data class que representa una versión compacta de una playlist.
+ *
+ * Esta clase se utiliza para representar una versión más compacta de la entidad
+ * y facilitar la serialización/deserialización, usada para los widgets.
+ *
+ * @property id El identificador único de la lista.
+ * @property name El nombre de la lista.
+ */
 @Serializable
 data class CompactPlaylist(
     val id: String,
-    val ownerUsername: String,
-    val name: String,
-    val songCount: Int
+    val name: String
 ) {
     constructor(playlist: Playlist) : this(
         id = playlist.id,
-        ownerUsername= playlist.ownerUsername,
-        name= playlist.name,
-        songCount=playlist.songCount
+        name= playlist.name
     )
 
 }

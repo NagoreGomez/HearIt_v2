@@ -15,7 +15,7 @@ import java.util.*
  * Esta clase contiene la información de una canción, incluyendo su identificador único, nombre,
  * nombre del cantante y URL.
  *
- * @property id El identificador único de la canción, generado automáticamente como un UUID.
+ * @property id El identificador único de la canción.
  * @property name El nombre de la canción.
  * @property singer El nombre del cantante de la canción.
  * @property url La URL de la canción.
@@ -31,7 +31,16 @@ data class Song(
     val concertDate: String
 )
 
-
+/**
+ * Data class que representa una versión compacta de una cancion.
+ *
+ * Esta clase se utiliza para representar una versión más compacta de la entidad
+ * y facilitar la serialización/deserialización, usada para los widgets.
+ *
+ * @property id El identificador único de la canción.
+ * @property name El nombre de la canción.
+ * @property url La URL de la canción.
+ */
 @Serializable
 data class CompactSong(
     val id: String,

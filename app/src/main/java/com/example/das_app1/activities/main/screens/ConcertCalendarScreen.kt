@@ -9,26 +9,40 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
+/*************************************************************************
+ ****                      ConcertCalendarScreen                       ****
+ *************************************************************************/
+
+/**
+ * ConcertCalendarScreen es la pantalla para mostrar la fecha del concierto y programar
+ * una alarma y un recordatorio.
+ *
+ * @param mainViewModel [MainViewModel] contiene los estados y llamadas necesarias.
+ */
 @Composable
 fun ConcertCalendarScreen(
     mainViewModel: MainViewModel
 ) {
-
+    // Fecha del concierto
     val concertDate= mainViewModel.singerConcertDate
+    // Dirección del concierto
     val concertLocationAddress = mainViewModel.singerConcertLocation
+
+    // Actualizar título
     mainViewModel.title= mainViewModel.songSinger
     val isVertical = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
 
-    // El recordatorio del calendario siempre el dia del concierto
+    // El recordatorio del calendario siempre el día del concierto
     val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     format.timeZone = TimeZone.getTimeZone("UTC")
     val date = format.parse(concertDate)
     val concertDateMillis = date?.time ?: 0
 
-    // La alarma un dia antes (por defecto) o cuando el usuario seleccione
+    // La alarma un día antes (por defecto) o cuando el usuario seleccione
     val concertAlarmMillis= concertDateMillis - (24 * 60 * 60 * 1000)
 
+    // ***************** PANTALLA PARA MOSTRAR LA FECHA DEL CONCIERTO *****************
     ConcertCalendar(
         mainViewModel = mainViewModel,
         isVertical = isVertical,

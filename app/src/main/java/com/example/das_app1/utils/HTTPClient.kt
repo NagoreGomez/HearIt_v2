@@ -37,20 +37,21 @@ import com.example.das_app1.model.entities.RemotePlaylistSongs
 import com.example.das_app1.model.entities.RemoteSong
 import kotlinx.coroutines.runBlocking
 
-/*******************************************************************************
- ****                               Exceptions                              ****
- *******************************************************************************/
-
+/**
+ * Referencias: https://ktor.io/docs/client-requests.html
+ */
 
 
 @Singleton
 class APIClient @Inject constructor() {
 
+    // Cliente HTTP con Ktor
     private val httpClient = HttpClient(CIO) {
 
         expectSuccess = true
         install(ContentNegotiation) { json() }
 
+        // Validar las excepciones en las respuestas
         HttpResponseValidator {
             handleResponseExceptionWithRequest { exception, _ ->
                 when {
@@ -66,7 +67,8 @@ class APIClient @Inject constructor() {
         }
     }
 
-    suspend fun authenticate(user: RemoteUser) {
+    // Función para autenticar un usuario
+    suspend fun identificate(user: RemoteUser) {
         httpClient.post("http://34.136.150.204:8000/identificate") {
             contentType(ContentType.Application.Json)
             setBody(user)
@@ -74,29 +76,33 @@ class APIClient @Inject constructor() {
 
     }
 
+    // Función para crear un usuario
     suspend fun createUser(user: RemoteUser) {
         httpClient.post("http://34.136.150.204:8000/users") {
             contentType(ContentType.Application.Json)
             setBody(user)
         }
     }
+
+    // Función para obtener las listas de un usuario
     suspend fun getUserPlaylists(username: String): List<RemotePlaylist> = runBlocking {
         val response = httpClient.get("http://34.136.150.204:8000/userPlaylists?user=$username")
         response.body()
     }
 
+    // Función para obtener la lista de canciones
     suspend fun getSongs(): List<RemoteSong> = runBlocking {
         val response = httpClient.get("http://34.136.150.204:8000/songs")
         response.body()
     }
 
+    // Función para obtener las canciones de una lista de un usuario
     suspend fun getUserPlaylistSongs(username: String): List<RemotePlaylistSongs> = runBlocking {
         val response = httpClient.get("http://34.136.150.204:8000/playlistsSongs?user=$username")
         response.body()
     }
 
-
-
+    // Función para crear una lista
     suspend fun createPlaylist(remotePlaylist: RemotePlaylist) = runBlocking {
         httpClient.post("http://34.136.150.204:8000/createPlaylist") {
             contentType(ContentType.Application.Json)
@@ -104,6 +110,7 @@ class APIClient @Inject constructor() {
         }
     }
 
+    // Función para editar el nombre de una lista
     suspend fun editPlaylist(remotePlaylist_id: String, remotePlaylist_name: String) = runBlocking {
         httpClient.post("http://34.136.150.204:8000/editPlaylist") {
             contentType(ContentType.Application.Json)
@@ -112,6 +119,7 @@ class APIClient @Inject constructor() {
         }
     }
 
+    // Función para eliminar una lista
     suspend fun deletePlaylist(remotePlaylist_id: String) = runBlocking {
         httpClient.post("http://34.136.150.204:8000/deletePlaylist") {
             contentType(ContentType.Application.Json)
@@ -119,6 +127,7 @@ class APIClient @Inject constructor() {
         }
     }
 
+    // Función para añadir una canción a una lista
     suspend fun addPlaylistSong(remotePlaylist_id: String, remoteSong_id: String) = runBlocking {
         httpClient.post("http://34.136.150.204:8000/addPlaylistSong") {
             contentType(ContentType.Application.Json)
@@ -127,6 +136,7 @@ class APIClient @Inject constructor() {
         }
     }
 
+    // Función para eliminar una canción de una lista
     suspend fun deletePlaylistSong(remotePlaylist_id: String, remoteSong_id: String) = runBlocking {
         httpClient.post("http://34.136.150.204:8000/deletePlaylistSong") {
             contentType(ContentType.Application.Json)
@@ -135,8 +145,7 @@ class APIClient @Inject constructor() {
         }
     }
 
-
-
+    // Función para suscribir a un usuario a notificaciones, para poder enviarle notificaciones FCM
     suspend fun subscribeUser(FCMClientToken: String) {
         Log.d("subs",FCMClientToken)
         httpClient.post("http://34.136.150.204:8000/notifications/subscribe") {
@@ -145,13 +154,14 @@ class APIClient @Inject constructor() {
         }
     }
 
-
+    // Función para obtener la imagen de perfil de un usuario
     suspend fun getUserProfile(username: String): Bitmap {
         val response = httpClient.get("http://34.136.150.204:8000/profile/image?user=$username")
         val image: ByteArray = response.body()
         return BitmapFactory.decodeByteArray(image, 0, image.size)
     }
 
+    // Función para subir una imagen de perfil para un usuario
     suspend fun uploadUserProfile(image: Bitmap, username: String) {
         val stream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.PNG, 100, stream)

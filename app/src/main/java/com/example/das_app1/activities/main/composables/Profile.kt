@@ -86,6 +86,8 @@ import java.io.IOException
  * @param prefLanguage idioma seleccionado por el usuario.
  * @param prefShowCount opcion mostrar o no mostrar seleccionado por el usuario.
  * @param prefTheme tema seleccionado por el usuario.
+ * @param profilePicture imagen de perfil.
+ * @param onEditImageRequest devolución de llamada para cambiar la imagen de perfil.
  */
 
 
@@ -209,6 +211,7 @@ fun Profile (
         }
         Box(contentAlignment = Alignment.BottomEnd) {
             Box(Modifier.padding(16.dp)) {
+                // Mientras no este la imagen mostrar una "cargando"
                 if (profilePicture == null) {
                     LoadingImagePlaceholder(size = 120.dp)
                 } else {
@@ -222,7 +225,7 @@ fun Profile (
                     )
                 }
             }
-
+            // Icono para cambiar la imagen
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -230,14 +233,11 @@ fun Profile (
                     .clip(CircleShape)
                     .clickable(onClick = onEditImageRequest)
             ) {
-
                 Icon(Icons.Filled.Circle, contentDescription = null, Modifier.size(40.dp), tint = MaterialTheme.colorScheme.primary)
                 Icon(Icons.Filled.Edit, contentDescription = null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.surface)
             }
 
         }
-
-
 
         Text(text = mainViewModel.username)
         Divider(Modifier.padding(top = 20.dp, bottom = 5.dp), color = MaterialTheme.colorScheme.onBackground)
@@ -295,6 +295,15 @@ fun Profile (
     )
 
 }
+
+
+/**
+ * LoadingImagePlaceholder es el componible encargado de mostrar la imagen de "cargando"
+ * animada mientras se establece la nueva imagen de perfil. Se mostrará una imagen parpadeante.
+ *
+ * @param size tamaño de la imagen de carga.
+ */
+
 
 
 @Composable

@@ -64,8 +64,6 @@ class IdentificationActivity : FragmentActivity() {
 
         setContent {
             DAS_LANA_IDENT_Theme {
-                // Obtener el tamaño de la ventana
-
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -85,6 +83,9 @@ class IdentificationActivity : FragmentActivity() {
         }
     }
 
+    /**
+     * Solicita permisos al usuario: notificaciones, calendario, localización e internet.
+     */
     @OptIn(ExperimentalPermissionsApi::class)
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Composable
@@ -114,7 +115,7 @@ class IdentificationActivity : FragmentActivity() {
      * @param username nombre de usuario del usuario registrado.
      */
     private fun onCorrectSignIn(username: String) {
-        val builder = NotificationCompat.Builder(this, MyNotificationChannels.AUTH_CHANNEL.name)
+        val builder = NotificationCompat.Builder(this, MyNotificationChannels.NOTIFICATIONS_CHANNEL.name)
             .setSmallIcon(R.drawable.noti)
             .setContentTitle(getString(R.string.enhorabuena, username))
             .setContentText(getString(R.string.te_has_registrado_correctamente_en_HearIt))
@@ -122,7 +123,7 @@ class IdentificationActivity : FragmentActivity() {
             .setAutoCancel(true)
         try {
             with(NotificationManagerCompat.from(this)) {
-                notify(NotificationID.USER_CREATED.id, builder.build())
+                notify(NotificationID.NOTIFICATIONS.id, builder.build())
             }
         } catch (e: SecurityException) {
             e.printStackTrace()
@@ -140,7 +141,7 @@ class IdentificationActivity : FragmentActivity() {
         // Establecer el username como último usuario que ha iniciado sesión
         identificationViewModel.updateLastLoggedUsername(username)
 
-        // Subscribe user
+        // Suscribir al usuario para que pueda recibir notificaciones FCM
         subscribeUser()
 
         // Llamar a la actividad principal
@@ -151,27 +152,28 @@ class IdentificationActivity : FragmentActivity() {
         finish()
     }
 
+    /**
+     * Funcion para suscribir al usuario, para que pueda recibir notificaciones FCM.
+     *
+     */
     @OptIn(DelicateCoroutinesApi::class)
     private fun subscribeUser() {
         val fcm = FirebaseMessaging.getInstance()
-        Log.d("FCM", "DCM obtained")
 
+        // Eliminar el token FCM actual
         fcm.deleteToken().addOnSuccessListener {
-            Log.d("FCM", "Token deleted")
+            // Obtener el nuevo token
             fcm.token.addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    Log.d("FCM", "Fetching FCM registration token failed", task.exception)
                     return@OnCompleteListener
                 }
-
                 GlobalScope.launch(Dispatchers.IO) {
                     try{
-                        Log.d("FCM", "New Token ${task.result}")
                         httpClient.subscribeUser(task.result)
-                        Log.d("FCM", "User subscribed")
+                        Log.d("FCM", "Usuario suscrito")
                     }
-                    catch (_:Exception){
-                        Log.d("a","http exception")
+                    catch (e:Exception){
+                        Log.d("Exception", e.printStackTrace().toString())
                     }
 
                 }

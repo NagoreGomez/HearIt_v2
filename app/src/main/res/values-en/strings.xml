@@ -32,10 +32,8 @@
     <string name="tus_playlists">Your playlists</string>
     <string name="quiere_cerrar_la_aplicacion">Are you sure you want to close the application?</string>
     <string name="cancelar">Cancel</string>
-    <string name="auth_channel">auth channel</string>
-    <string name="notification_channel">notification channel for identification</string>
-    <string name="corp_channel">corp channel</string>
-    <string name="corp_notification_channel">notification channel for corporation</string>
+    <string name="notifications_channel">Notifications channel</string>
+    <string name="notification_channel_desc">Channel for notifications</string>
     <string name="idioma_de_la_aplicaci_n">Application language</string>
     <string name="selecciona_tu_idioma">Select language</string>
     <string name="aplicar">Apply</string>
