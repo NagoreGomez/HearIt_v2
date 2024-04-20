@@ -1,4 +1,4 @@
-package com.example.das_app1.widgets
+package com.example.das_app1.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -39,14 +39,14 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import com.example.das_app1.model.entities.CompactPlaylist
-import com.example.das_app1.widgets.WidgetReceiver.Companion.currentUserKey
+import com.example.das_app1.widget.WidgetReceiver.Companion.currentUserKey
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import com.example.das_app1.R
 import com.example.das_app1.model.entities.CompactPlaylistSongs
 import com.example.das_app1.model.entities.CompactSong
-import com.example.das_app1.widgets.WidgetReceiver.Companion.playlists
-import com.example.das_app1.widgets.WidgetReceiver.Companion.songs
+import com.example.das_app1.widget.WidgetReceiver.Companion.playlists
+import com.example.das_app1.widget.WidgetReceiver.Companion.songs
 
 /**
  * Clase para definir el widget personalizado, extiende de GlanceAppWidget.

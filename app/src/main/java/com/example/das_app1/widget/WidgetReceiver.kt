@@ -1,4 +1,4 @@
-package com.example.das_app1.widgets
+package com.example.das_app1.widget
 
 import android.appwidget.AppWidgetManager
 import android.content.Context

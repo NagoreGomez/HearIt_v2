@@ -69,9 +69,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import com.example.das_app1.activities.main.screens.ConcertCalendarScreen
 import com.example.das_app1.activities.main.screens.ConcertLocationScreen
-import com.example.das_app1.widgets.Widget
-import com.example.das_app1.widgets.WidgetReceiver
-import com.example.das_app1.widgets.WidgetReceiver.Companion.UPDATE_ACTION
+import com.example.das_app1.widget.WidgetReceiver
+import com.example.das_app1.widget.WidgetReceiver.Companion.UPDATE_ACTION
 import kotlin.system.exitProcess
 
 

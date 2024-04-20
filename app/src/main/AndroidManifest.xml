@@ -71,7 +71,7 @@
         </provider>
 
         <receiver
-            android:name=".widgets.WidgetReceiver"
+            android:name=".widget.WidgetReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
